@@ -123,7 +123,7 @@ const validate=(formData)=>{
                   <img
                     alt="Blood donation illustration"
                     className="h-56 w-full rounded-[18px] object-cover"
-                    src="./src/assets/87f274d7-db1c-41bc-ab4e-02cc89a1641f.png"
+                    src="./src/assets/blood.png"
                   />
                 </div>
                 <div className="mt-3 grid grid-cols-3 gap-2">
@@ -295,7 +295,7 @@ const validate=(formData)=>{
                   </button>
                   <p className="text-center text-sm leading-5 text-[#71717b]">
                     Already have an account?
-                    <span className="cursor-pointer font-semibold text-[#fb2c36]">
+                    <span onClick={()=>{navigate("/login")}} className="cursor-pointer font-semibold text-[#fb2c36]">
                       Sign In
                     </span>
                   </p>

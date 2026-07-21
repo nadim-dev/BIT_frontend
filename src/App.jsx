@@ -1,5 +1,6 @@
 import {createBrowserRouter, Navigate, Outlet, RouterProvider,} from "react-router-dom";
 import Register from "./pages/Register";
+import { Login } from "./pages/Login";
 
 const router=createBrowserRouter([
 {
