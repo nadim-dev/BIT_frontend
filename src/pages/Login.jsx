@@ -1,27 +1,16 @@
-import React, { useState } from "react";
-import {
-  ArrowRight,
-  ChevronDown,
-  Droplets,
-  Eye,
-  Globe,
-  Heart,
-  HeartPulse,
-  Hospital,
-  Lock,
-  LogIn,
-  Mail,
-  Quote,
-  Users,
-} from "lucide-react";
+import { useState } from "react";
+import {ArrowRight,ChevronDown,Droplets,Eye,Globe,Heart,HeartPulse,Hospital,Lock,LogIn,Mail,Quote,Users} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { loginApi } from "../api/userApi";
+import { loginApi } from "../api/authApi";
+import { useAuth } from "../hooks/useAuth";
+import { getDashboardPath } from "../utils/dashboardRoutes";
 
 export function Login() {
   const navigate = useNavigate();
+  const { fetchCurrentUser } = useAuth();
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "khanm99098@gmail.com",
+    password: "12345678",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -80,7 +69,8 @@ export function Login() {
 
     try {
       await loginApi(formData);
-      navigate("/");
+      const currentUser = await fetchCurrentUser();
+      navigate(getDashboardPath(currentUser?.role));
     } catch (err) {
       console.log(err.message);
       setErrors({

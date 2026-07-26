@@ -3,6 +3,7 @@ import { Check, LoaderCircle, Send } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { createEnquiry } from "../api/enquiryApi";
 
 const contactSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters."),
@@ -66,14 +67,7 @@ export default function ContactForm() {
 
   const onSubmit = async (payload) => {
     try {
-      void payload;
-      // TODO: Send this payload to POST /api/contact when the backend endpoint is ready.
-      // await fetch("/api/contact", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(payload),
-      // });
-      await new Promise((resolve) => setTimeout(resolve, 900));
+      await createEnquiry(payload);
 
       reset();
       setToast({
@@ -89,7 +83,7 @@ export default function ContactForm() {
   };
 
   const inputClass =
-    "mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-zinc-950 shadow-sm outline-none transition-all duration-300 placeholder:text-[#71717b]/70 focus:border-[#fb2c36] focus:ring-4 focus:ring-[#fb2c36]/10";
+    "mt-1.5 w-full rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm text-zinc-950 shadow-sm outline-none transition-all duration-300 placeholder:text-[#71717b]/70 focus:border-[#fb2c36] focus:ring-4 focus:ring-[#fb2c36]/10";
 
   return (
     <motion.div
@@ -97,9 +91,9 @@ export default function ContactForm() {
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      className="relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+      className="relative rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5"
     >
-      <div className="mb-5">
+      <div className="mb-4">
         <h3 className="font-extrabold text-2xl leading-8 tracking-tight text-zinc-950">
           Send us a message
         </h3>
@@ -126,7 +120,7 @@ export default function ContactForm() {
         )}
       </AnimatePresence>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3" noValidate>
         <div>
           <label
             htmlFor="contact-name"
@@ -224,7 +218,7 @@ export default function ContactForm() {
           </label>
           <textarea
             id="contact-message"
-            rows="4"
+            rows="3"
             aria-required="true"
             aria-invalid={Boolean(errors.message)}
             aria-describedby={
@@ -263,7 +257,7 @@ export default function ContactForm() {
           disabled={isSubmitting}
           whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
           whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-          className="w-full rounded-2xl bg-[#fb2c36] px-6 py-3.5 font-bold text-white shadow-lg shadow-red-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-500/25 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto sm:min-w-44 flex items-center justify-center gap-2"
+          className="w-full cursor-pointer rounded-2xl bg-[#fb2c36] px-6 py-3 font-bold text-white shadow-lg shadow-red-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-500/25 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto sm:min-w-44 flex items-center justify-center gap-2"
         >
           {isSubmitting ? (
             <>

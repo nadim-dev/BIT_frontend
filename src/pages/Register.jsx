@@ -1,7 +1,6 @@
-import React from "react";
-import {ArrowRight,Check,ChevronDown,CircleCheck,Droplets,Eye,Globe,Heart,HeartPulse,Hospital,Lock,Mail,Quote,ShieldCheck,User,Users} from "lucide-react";
+import {ArrowRight,ChevronDown,Droplets,Eye,Globe,Heart,HeartPulse,Hospital,Lock,Mail,Quote,User,Users} from "lucide-react";
 import { useState } from "react";
-import { registerApi } from "../api/userApi";
+import { registerApi } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
@@ -72,7 +71,7 @@ const validate=(formData)=>{
    if(Object.keys(validationResult).length) return;
    //* if there is no validation then i will call backend api
    try{
-    const data=await registerApi(formData);
+    await registerApi(formData);
     navigate("/login");
    }catch(err){
     console.log(err.message);
@@ -174,13 +173,7 @@ const validate=(formData)=>{
             </div>
             <div className="flex items-center justify-center bg-white p-3 sm:p-4 lg:p-5">
               <div className="w-full max-w-[440px] rounded-[24px] border border-zinc-200 bg-white p-4 shadow-[0_12px_40px_rgba(0,0,0,0.06)] sm:p-5">
-                <div className="flex items-center justify-end text-sm leading-5 text-[#71717b]">
-                  <div className="flex items-center gap-2 rounded-full border border-zinc-200 px-2.5 py-1.5">
-                    <Globe className="size-3.5" />
-                    <span>English</span>
-                    <ChevronDown className="size-3.5" />
-                  </div>
-                </div>
+                
                 <div className="mt-3 flex flex-col items-center text-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-[#fb2c36]/10 text-[#fb2c36]">
                     <HeartPulse className="size-6" />

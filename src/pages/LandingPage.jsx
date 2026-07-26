@@ -1,8 +1,11 @@
-import {Activity, CircleHelp,Bell,Building2,ChevronDown,Droplet,Heart,Info,Lock,Mail,MapPin,MessageCircle,MessageSquare,Phone,Quote,Search,ShieldCheck,Signal,Star,Truck,Users,Zap} from "lucide-react";
+import {Activity,Sparkles,CircleHelp,Bell,Building2,ChevronDown,Droplet,Heart,Info,Lock,Mail,MapPin,MessageCircle,MessageSquare,Phone,Quote,Search,ShieldCheck,Signal,Star,Truck,Users,Zap} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import deliveryPartnerImage from "../assets/delivery_partner.png";
 import ContactSection from "../components/ContactSection";
+import { useAuth } from "../hooks/useAuth";
+import { getDashboardPath } from "../utils/dashboardRoutes";
+
 
 const Button = ({ className = "", children, type = "button", ...props }) => (
   <button
@@ -102,6 +105,7 @@ const faqs = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [likedTestimonials, setLikedTestimonials] = useState(
     testimonials.map(() => false)
   );
@@ -119,6 +123,15 @@ export default function LandingPage() {
     document
       .getElementById(target)
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleGetStarted = () => {
+    if (currentUser) {
+      navigate(getDashboardPath(currentUser.role));
+      return;
+    }
+
+    navigate("/login");
   };
 
   return (
@@ -140,6 +153,14 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="flex items-center gap-1">
+
+              <button onClick={()=>{scrollToTestimonials("feature")}} className="cursor-pointer transition-colors font-medium rounded-lg text-sm leading-5 flex px-3 py-2 items-center gap-1.5">
+                <Sparkles className="size-4" />
+                <span className="relative">
+                  Feature
+                  <span className="rounded-full bg-[#fb2c36] hidden absolute left-0 -bottom-1 w-full h-0.5" />
+                </span>
+              </button>
 
               <button onClick={()=>{scrollToTestimonials("How_it_Works")}} className="cursor-pointer transition-colors font-medium rounded-lg text-sm leading-5 flex px-3 py-2 items-center gap-1.5">
                 <Info className="size-4" />
@@ -180,10 +201,10 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center gap-2">
               <Button
-                onClick={() => navigate("/login")}
-                className="shadow-lg shadow-primary/30 transition-transform rounded-full bg-[#fb2c36] text-red-50 px-5 py-2"
+                onClick={handleGetStarted}
+                className="shadow-lg cursor-pointer shadow-primary/30 transition-transform rounded-full bg-[#fb2c36] text-red-50 px-5 py-2"
               >
-                Login / Register
+                Get Started
               </Button>
             </div>
           </div>
@@ -508,7 +529,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="max-w-[1140px] mx-auto px-8 pb-16">
+        <section id="feature" className="scroll-mt-24 max-w-[1140px] mx-auto px-8 pb-16">
           <div className="grid grid-cols-2 items-center gap-10">
             <div className="flex flex-col gap-5">
               <span className="font-bold uppercase rounded-full bg-[#fb2c36]/10 text-[#fb2c36] text-xs leading-4 tracking-widest px-3 py-1 w-fit">{`Smart & Secure`}</span>
