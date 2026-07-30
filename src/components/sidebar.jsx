@@ -1,5 +1,6 @@
 import { ChevronRight, Droplet, LogOut } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import getInitials from "../utils/getInitial";
 
 export default function Sidebar({ user, passUserMenu = [] }) {
   return (
@@ -69,11 +70,11 @@ export default function Sidebar({ user, passUserMenu = [] }) {
           className="block rounded-2xl border border-white/15 bg-white/10 p-2 shadow-xl shadow-black/10 backdrop-blur transition hover:bg-white/15"
         >
           <div className="flex items-center gap-2">
-            <img
-              src={user.imageUrl || "https://i.pravatar.cc/96?img=12"}
+            {user?.picture ? <img
+              src={user.picture || "https://i.pravatar.cc/96?img=12"}
               alt={user.username}
               className="size-10 rounded-xl border-2 border-white/70 object-cover"
-            />
+            /> : getInitials(user.username)}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold">{user.username}</p>
               <p className="mt-0.5 text-xs font-medium text-white/75">

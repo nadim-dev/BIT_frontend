@@ -2,13 +2,14 @@ import {createBrowserRouter, Navigate, Outlet, RouterProvider} from "react-route
 import Register from "./pages/Register";
 import { Login } from "./pages/Login";
 import LandingPage from "./pages/LandingPage";
-import { UserDashBoard } from "./pages/UserDashBoard/UserDashboard";
+import { UserDashBoard } from "./pages/UserDashboard";
 import { Loader } from "./components/Loader";
 import { useAuth } from "./hooks/useAuth";
 import { getDashboardPath } from "./utils/dashboardRoutes";
 import DashboardLayout from "./layouts/DashboardLayout";
-import DashboardPlaceholder from "./pages/UserDashBoard/DashboardPlaceholder";
-
+import DashboardPlaceholder from "./pages/DashboardPlaceholder";
+import { BecomeDonor } from "./pages/BecomeDonor";
+import { ContactUs } from "./pages/ContactUs";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -60,16 +61,25 @@ const router=createBrowserRouter([
     path:"/dashboard",
     element:<RoleRedirect />,
 },
+{
+   path:"/become-donor",
+   element:<BecomeDonor />
+},
   {
     element:<ProtectedLayout />,
-    children:[
-       {
+    children:[{
           element:<DashboardLayout />,
           children:[
              {
                 path:"/user/dashboard",
                 element:<UserDashBoard />,
              },
+             
+             {
+                   path:"/support",
+                   element:<ContactUs />
+             },
+             
              {
                 path:"/hospital/dashboard",
                 element:<UserDashBoard />,
@@ -93,10 +103,6 @@ const router=createBrowserRouter([
              {
                 path:"/requests",
                 element:<DashboardPlaceholder title="My Requests" description="View and manage your blood requests in one place." />,
-             },
-             {
-                path:"/become-donor",
-                element:<DashboardPlaceholder title="Become a Donor" description="Complete donor details and start helping nearby patients." />,
              },
              {
                 path:"/my-donations",
@@ -126,10 +132,10 @@ const router=createBrowserRouter([
                 path:"/support",
                 element:<DashboardPlaceholder title="Help & Support" description="Get help with your account, requests, and donor activity." />,
              },
-          ],
-       },
     ],
-  },
+       
+  }],
+   },
 ])
 
 

@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 import { useAuth } from "../hooks/useAuth";
 import { getDashboardPath } from "../utils/dashboardRoutes";
+import { GoogleLogin } from "@react-oauth/google";
+import { loginWithGoogle } from "../api/authApi";
+
 
 export function Login() {
   const navigate = useNavigate();
-  const { fetchCurrentUser } = useAuth();
+  const { setCurrentUser } = useAuth();
   const [formData, setFormData] = useState({
     email: "khanm99098@gmail.com",
     password: "12345678",
@@ -68,8 +71,9 @@ export function Login() {
     if (Object.keys(validationResult).length) return;
 
     try {
-      await loginApi(formData);
-      const currentUser = await fetchCurrentUser();
+      const data = await loginApi(formData);
+      const currentUser = data.currentUser;
+      setCurrentUser(currentUser);
       navigate(getDashboardPath(currentUser?.role));
     } catch (err) {
       console.log(err.message);
@@ -169,13 +173,7 @@ export function Login() {
             </div>
             <div className="flex items-center justify-center bg-white p-3 sm:p-4 lg:p-5">
               <div className="w-full max-w-[440px] rounded-[24px] border border-zinc-200 bg-white p-4 shadow-[0_12px_40px_rgba(0,0,0,0.06)] sm:p-5">
-                <div className="flex items-center justify-end text-sm leading-5 text-[#71717b]">
-                  <div className="flex items-center gap-2 rounded-full border border-zinc-200 px-2.5 py-1.5">
-                    <Globe className="size-3.5" />
-                    <span>English</span>
-                    <ChevronDown className="size-3.5" />
-                  </div>
-                </div>
+            
                 <div className="mt-3 flex flex-col items-center text-center">
                   <div className="flex size-12 items-center justify-center rounded-full bg-[#fb2c36]/10 text-[#fb2c36]">
                     <LogIn className="size-6" />
@@ -255,6 +253,7 @@ export function Login() {
                     Sign In
                     <ArrowRight className="size-5" />
                   </button>
+                </form>
                   <div className="flex items-center gap-3 py-1">
                     <div className="h-px flex-1 bg-zinc-200" />
                     <span className="text-xs font-medium leading-4 tracking-[3.2px] text-[#71717b]">
@@ -262,12 +261,29 @@ export function Login() {
                     </span>
                     <div className="h-px flex-1 bg-zinc-200" />
                   </div>
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium leading-5 text-zinc-950 shadow-sm transition"
-                  >
-                    Continue with Google
-                  </button>
+                  <GoogleLogin
+                     
+        
+                      onSuccess={async (credentialResponse) => {
+                        try{
+                        const data=await loginWithGoogle(credentialResponse.credential);
+                        const currentUser = data.currentUser;
+                        setCurrentUser(currentUser);
+                        navigate(getDashboardPath(currentUser?.role))
+                      }catch(err){
+                        setErrors({
+                          form: err.message,
+                        });
+                      }
+                      }}
+                      onError={() => {
+                        setErrors({
+                          form: "Login with Google failed",
+                        });
+                      }}
+                      useOneTap
+                      auto_select
+                    />
                   <p className="text-center text-sm leading-5 text-[#71717b]">
                     Don't have an account?
                     <span
@@ -278,7 +294,7 @@ export function Login() {
                       Create one
                     </span>
                   </p>
-                </form>
+                
               </div>
             </div>
           </div>

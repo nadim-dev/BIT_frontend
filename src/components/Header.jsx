@@ -6,13 +6,16 @@ import { logoutApi } from "../api/authApi";
 import getInitials from "../utils/getInitial";
 
 
-export const Header = ({ user }) => {
+export const Header = ({ user,title,subtitle}) => {
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isLocationOpen, setIsLocationOpen] = useState(false);
   const username = user?.username || "User";
   const firstName = username.split(" ")[0];
   const initials = getInitials(username);
+  const shortLocation = user?.short_address || user?.location || "Bhiwandi, Maharashtra";
+  const fullLocation = user?.long_address || shortLocation;
 
   const handleLogout = async () => {
     try{
@@ -28,21 +31,32 @@ export const Header = ({ user }) => {
     <header className="flex items-center justify-between border-b border-zinc-100 pb-4">
       <div>
         <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-zinc-950">
-          Welcome back, {firstName}! 👋
+          {title || `Welcome back, ${firstName}! 👋`}
         </h1>
-        <p className="mt-1 text-sm text-[#71717b]">
-          Every good act brings hope.
+        <p className="mt-1 text-sm text-[rgb(113,113,123)]">
+          {subtitle || "Every good act brings hope."}
         </p>
       </div>
 
       <div className="flex items-center gap-3">
         <button
           type="button"
-          className="flex h-11 items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-800 shadow-sm transition hover:border-red-200 hover:bg-red-50"
+          aria-expanded={isLocationOpen}
+          onClick={() => setIsLocationOpen((value) => !value)}
+          className="cursor-pointer relative flex h-11 max-w-72 items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-800 shadow-sm transition hover:border-red-200 hover:bg-red-50"
         >
           <MapPin className="size-4 fill-[#fb2c36] text-[#fb2c36]" />
-          <span>{user?.location || "Bhiwandi, Maharashtra"}</span>
-          <ChevronDown className="size-4 text-[#71717b]" />
+          <span className="min-w-0 truncate">{shortLocation}</span>
+          <ChevronDown
+            className={`size-4 shrink-0 text-[#71717b] transition-transform ${
+              isLocationOpen ? "rotate-180" : ""
+            }`}
+          />
+          {isLocationOpen && (
+            <span className="absolute left-0 top-14 z-50 w-80 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-left text-xs font-semibold leading-relaxed text-zinc-700 shadow-[0_20px_60px_rgba(15,23,42,0.16)]">
+              {fullLocation}
+            </span>
+          )}
         </button>
 
         <button
@@ -63,9 +77,9 @@ export const Header = ({ user }) => {
             onClick={() => setIsUserMenuOpen((value) => !value)}
             className="cursor-pointer flex h-11 items-center gap-2 rounded-full border border-zinc-200 bg-white pl-1.5 pr-3 shadow-sm transition hover:border-red-200 hover:bg-red-50"
           >
-            {user?.imageUrl ? (
+            {user?.picture ? (
               <img
-                src={user.imageUrl}
+                src={user.picture}
                 alt={username}
                 className="size-8 rounded-full object-cover"
               />

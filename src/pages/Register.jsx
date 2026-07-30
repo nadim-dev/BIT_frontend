@@ -2,6 +2,7 @@ import {ArrowRight,ChevronDown,Droplets,Eye,Globe,Heart,HeartPulse,Hospital,Lock
 import { useState } from "react";
 import { registerApi } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function Register() {
    const navigate=useNavigate();

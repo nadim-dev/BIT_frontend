@@ -19,12 +19,6 @@ const menuItems = [
     href: "/requests",
   },
   {
-    title: "Become a Donor",
-    icon: HeartHandshake,
-    href: "/become-donor",
-    show: (user) => !user.isDonor,
-  },
-  {
     title: "My Donations",
     icon: HeartHandshake,
     href: "/my-donations",
@@ -65,7 +59,7 @@ export const useDashboard = () => {
     username: currentUser?.username || currentUser?.name || "User",
     email: currentUser?.email || "",
     role: currentUser?.role || "User",
-    location: currentUser?.location || "Bhiwandi, Maharashtra",
+    location: currentUser?.short_address || currentUser?.location || "Bhiwandi, Maharashtra",
     bloodGroup: currentUser?.bloodGroup || "Unknown",
     isDonor: Boolean(currentUser?.isDonor),
     imageUrl: currentUser?.imageUrl || currentUser?.avatar || "",
