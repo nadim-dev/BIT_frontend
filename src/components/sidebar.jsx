@@ -23,6 +23,7 @@ export default function Sidebar({ user, passUserMenu = [] }) {
             <NavLink
               key={item.title}
               to={item.href}
+              end={item.href === "/support"}
               className={({ isActive }) =>
                 [
                   "group flex min-h-10 items-center gap-2 rounded-xl px-2.5 text-sm font-semibold transition-all duration-200",

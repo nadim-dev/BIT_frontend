@@ -1,4 +1,4 @@
-import {Bell,CircleHelp,ClipboardList,Droplets,HeartHandshake,Hospital,LayoutDashboard,Settings,Siren,User} from "lucide-react";
+import {Bell,Ticket,CircleHelp,ClipboardList,Droplets,HeartHandshake,Hospital,LayoutDashboard,Settings,Siren,User} from "lucide-react";
 import { useAuth } from "./useAuth";
 
 
@@ -19,10 +19,9 @@ const menuItems = [
     href: "/requests",
   },
   {
-    title: "My Donations",
-    icon: HeartHandshake,
-    href: "/my-donations",
-    show: (user) => user.isDonor,
+  title: "My Tickets",
+  icon: Ticket,
+  href: "/my-tickets",
   },
   {
     title: "Nearby Hospitals",

@@ -10,6 +10,9 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardPlaceholder from "./pages/DashboardPlaceholder";
 import { BecomeDonor } from "./pages/BecomeDonor";
 import { ContactUs } from "./pages/ContactUs";
+import CreateSupportTicket from "./pages/CreateSupportTicket";
+import { MyTickets } from "./pages/Myticket";
+import { TicketDetails } from "./pages/TicketDetails";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -79,6 +82,18 @@ const router=createBrowserRouter([
                    path:"/support",
                    element:<ContactUs />
              },
+             {
+                   path:"/support/create-ticket",
+                   element:<CreateSupportTicket />
+             },
+             {
+                path:"/my-tickets",
+                element:<MyTickets/>,
+             },
+             {
+                path:"/my-tickets/:ticketId",
+                element:<TicketDetails/>,
+             },
              
              {
                 path:"/hospital/dashboard",
@@ -127,10 +142,6 @@ const router=createBrowserRouter([
              {
                 path:"/settings",
                 element:<DashboardPlaceholder title="Settings" description="Control dashboard preferences and account settings." />,
-             },
-             {
-                path:"/support",
-                element:<DashboardPlaceholder title="Help & Support" description="Get help with your account, requests, and donor activity." />,
              },
     ],
        
