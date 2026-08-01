@@ -13,6 +13,7 @@ import { ContactUs } from "./pages/ContactUs";
 import CreateSupportTicket from "./pages/CreateSupportTicket";
 import { MyTickets } from "./pages/Myticket";
 import { TicketDetails } from "./pages/TicketDetails";
+import { ProfilePage } from "./pages/Profile";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -76,6 +77,11 @@ const router=createBrowserRouter([
              {
                 path:"/user/dashboard",
                 element:<UserDashBoard />,
+             },
+
+             { 
+                path:"/profile",
+                element:<ProfilePage />
              },
              
              {

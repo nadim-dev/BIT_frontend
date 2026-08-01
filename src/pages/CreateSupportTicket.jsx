@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { z } from "zod";
 import {AlertCircle,BadgeCheck,CalendarDays,ChevronDown,ClipboardList,FileUp,Info,LoaderCircle,RotateCcw,Send,Tag,Ticket,X} from "lucide-react";
 import { createSupportTicket } from "../api/supportTicketApi";
+import { formatTicketDate } from "../utils/dateCustomization";
 
 const categories = [
   "Blood Services",
@@ -23,7 +24,6 @@ const supportedFileTypes = [
   "image/png",
   "image/jpg",
   "image/jpeg",
-  "application/pdf",
 ];
 
 const maxFileSize = 5 * 1024 * 1024;
@@ -40,7 +40,7 @@ const supportTicketSchema = z.object({
       message: "File size must be 5MB or less.",
     })
     .refine((files) => !files?.[0] || supportedFileTypes.includes(files[0].type), {
-      message: "Only PNG, JPG, JPEG, or PDF files are supported.",
+      message: "Only PNG, JPG, or JPEG files are supported.",
     }),
 });
 
@@ -71,17 +71,6 @@ const zodResolver = async (values) => {
   };
 };
 
-const formatTicketDate = (value) => {
-  if (!value) return "Just now";
-
-  return new Intl.DateTimeFormat("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value));
-};
 
 function SuccessInfoRow({ icon: Icon, label, value }) {
   return (
@@ -433,12 +422,12 @@ export default function CreateSupportTicket() {
                 Drop your file here or browse
               </span>
               <span className="mt-1 text-xs font-medium text-slate-500">
-                PNG, JPG, JPEG, or PDF up to 5MB
+                PNG, JPG, or JPEG up to 5MB
               </span>
               <input
                 id={fileInputId}
                 type="file"
-                accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpg,image/jpeg,application/pdf"
+                accept=".png,.jpg,.jpeg,image/png,image/jpg,image/jpeg"
                 className="sr-only"
                 aria-invalid={Boolean(errors.screenshot)}
                 aria-describedby={
