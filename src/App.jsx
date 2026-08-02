@@ -65,12 +65,10 @@ const router=createBrowserRouter([
     path:"/dashboard",
     element:<RoleRedirect />,
 },
-{
-   path:"/become-donor",
-   element:<BecomeDonor />
-},
+
   {
     element:<ProtectedLayout />,
+
     children:[{
           element:<DashboardLayout />,
           children:[
@@ -78,6 +76,9 @@ const router=createBrowserRouter([
                 path:"/user/dashboard",
                 element:<UserDashBoard />,
              },
+             {path:"/become-donor",
+             element:<BecomeDonor />
+            },
 
              { 
                 path:"/profile",
@@ -140,10 +141,6 @@ const router=createBrowserRouter([
              {
                 path:"/notifications",
                 element:<DashboardPlaceholder title="Notifications" description="See important updates, alerts, and account messages." />,
-             },
-             {
-                path:"/profile",
-                element:<DashboardPlaceholder title="Profile" description="Manage your personal details and account information." />,
              },
              {
                 path:"/settings",

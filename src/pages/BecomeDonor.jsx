@@ -62,7 +62,7 @@ const donorReasons = [
 ];
 
 export const BecomeDonor = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, fetchCurrentUser } = useAuth();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
   const [formError, setFormError] = useState("");
@@ -305,12 +305,26 @@ export const BecomeDonor = () => {
       setFormError("");
       setSubmitMessage("");
       setIsSubmitting(true);
-      const { location, ...donorPayload } = donorForm;
       await createDonor({
-        ...donorPayload,
-        fullName: userName,
-        email: userEmail,
+        phoneNumber: donorForm.phoneNumber,
+        gender: donorForm.gender,
+        dateOfBirth: donorForm.dateOfBirth,
+        location: donorForm.location,
+        bloodGroup: donorForm.bloodGroup,
+        weight: donorForm.weight,
+        hasDonatedBefore: donorForm.donatedBefore,
+        lastDonationDate: donorForm.lastDonationDate,
+        isHealthy: donorForm.isHealthy,
+        healthReason: donorForm.healthReason,
+        eligibilityConfirmed: donorForm.eligibilityConfirmed,
+        availability: donorForm.availability,
+        preferredDistance: donorForm.maxTravelDistance,
+        notificationPreferences: {
+          nearbyRequests: donorForm.notifyNearbyRequests,
+          emergencyRequests: donorForm.notifyEmergencyRequests,
+        },
       });
+      await fetchCurrentUser();
       setSubmitMessage("You are now registered as a blood donor.");
     } catch (error) {
       setFormError(error.message || "Unable to create donor profile.");
