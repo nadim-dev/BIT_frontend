@@ -23,6 +23,10 @@ export const updatePasswordApi=(passwordData)=> axiosWithCreds.patch("/api/auth/
 
 export const deleteAccountApi=()=> axiosWithCreds.delete("/api/auth/account");
 
+export const forgotPasswordApi=(payload)=> axiosWithoutCreds.post("/api/auth/forgot-password",payload);
+
+export const resetPasswordApi=(token,payload)=> axiosWithoutCreds.patch(`/api/auth/reset-password/${token}`,payload);
+
 export const logoutApi=()=>axiosWithCreds.post("/api/auth/logout");
 
 export const loginWithGoogle = async (id_token) =>

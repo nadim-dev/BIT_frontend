@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import { getDashboardPath } from "../utils/dashboardRoutes";
 import { GoogleLogin } from "@react-oauth/google";
 import { loginWithGoogle } from "../api/authApi";
+import { Link } from "react-router-dom";
 
 
 export function Login() {
@@ -214,14 +215,14 @@ export function Login() {
                       {errors.email}
                     </p>
                   </div>
-                  <div className="relative mb-[0.8rem] space-y-2">
+                  <div className="relative mb-[0.8rem] space-y-2 ">
                     <label
                       htmlFor="password"
                       className="text-sm font-medium leading-5 text-[#fb2c36]"
                     >
                       Password
                     </label>
-                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-2.5">
+                    <div className="flex items-center mb-[0.4rem] gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-2.5">
                       <Lock className="size-4 text-[#71717b]" />
                       <input
                         id="password"
@@ -244,6 +245,9 @@ export function Login() {
                     <p className="absolute left-1 top-16 text-[10px] text-green-700">
                       {errors.password}
                     </p>
+                    <Link to="/forgot-password" className="text-[12px] text-blue-700 hover:underline">
+                        Forgot Password?
+                    </Link>
                   </div>
 
                   <button

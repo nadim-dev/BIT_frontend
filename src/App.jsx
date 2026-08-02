@@ -14,6 +14,9 @@ import CreateSupportTicket from "./pages/CreateSupportTicket";
 import { MyTickets } from "./pages/Myticket";
 import { TicketDetails } from "./pages/TicketDetails";
 import { ProfilePage } from "./pages/Profile";
+import { ForgotPassPage } from "./pages/Forgot.jsx";
+import { ResetPasswordPage } from "./pages/Reset.jsx";
+
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -62,8 +65,15 @@ const router=createBrowserRouter([
    element: <Login />,
 },
 {
+   path:"/forgot-password",
+   element:<ForgotPassPage />
+},
+{
     path:"/dashboard",
     element:<RoleRedirect />,
+},
+{  path:"/reset-password/:token",
+   element:<ResetPasswordPage />
 },
 
   {
