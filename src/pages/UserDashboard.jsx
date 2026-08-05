@@ -1,14 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import {
-  BadgeCheck,
-  CalendarDays,
-  Droplet,
-  Heart,
-  Hospital,
-  MapPin,
-  ShieldCheck,
-} from "lucide-react";
+import {ArrowRight,BadgeCheck,CalendarDays,Droplet,Heart,Hospital,MapPin,ShieldCheck} from "lucide-react";
 import BecomeDonorCta from "../components/BecomeDonorCta";
 
 const nearbyBloodBanks = [
@@ -221,9 +213,74 @@ function DidYouKnowCard() {
   );
 }
 
+function DashboardBottomStrip() {
+ 
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(280px,1fr)]">
+      <div className="flex min-h-[132px] items-center justify-between gap-4 rounded-lg border border-amber-100 bg-gradient-to-r from-amber-50 via-orange-50 to-white p-5 shadow-sm">
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#fb2c36] text-white shadow-sm">
+            <BadgeCheck className="h-6 w-6" strokeWidth={2.5} />
+          </div>
+
+          <div className="min-w-0">
+            <h2 className="text-sm font-extrabold text-zinc-950">
+              Ready to make an impact?
+            </h2>
+            <p className="mt-2 text-xs font-semibold text-zinc-500">
+              It only takes a few minutes to become a donor.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          to="/become-donor"
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-md border border-[#fb2c36] bg-white px-5 text-xs font-extrabold text-[#fb2c36] transition hover:bg-red-50"
+        >
+          Become a Donor Now
+          <ArrowRight className="h-4 w-4" strokeWidth={2.6} />
+        </Link>
+      </div>
+
+      <div className="flex min-h-[132px] items-center justify-between gap-4 rounded-lg border border-sky-100 bg-sky-50/70 p-5 shadow-sm">
+        <div className="min-w-0">
+          <h2 className="text-sm font-extrabold text-zinc-950">
+            Stay Hydrated, Stay Healthy
+          </h2>
+          <p className="mt-2 max-w-[260px] text-xs font-semibold leading-5 text-zinc-600">
+            Drink plenty of water, eat nutritious food and stay healthy.
+          </p>
+        </div>
+
+        <div className="relative h-20 w-24 shrink-0">
+          <div className="absolute bottom-1 right-2 h-16 w-8 rounded-b-lg rounded-t-md border border-sky-200 bg-sky-200 shadow-sm">
+            <div className="h-3 rounded-t-md bg-sky-500" />
+            <div className="mx-auto mt-2 h-8 w-5 rounded bg-sky-100/80" />
+          </div>
+          <div className="absolute bottom-1 left-3 h-11 w-8 rounded-b-lg rounded-t-sm border border-sky-200 bg-sky-100">
+            <div className="mt-5 h-5 rounded-b-lg bg-sky-300" />
+          </div>
+          <div className="absolute bottom-1 left-11 h-9 w-6 rounded-b-md rounded-t-sm border border-sky-200 bg-white">
+            <div className="mt-4 h-4 rounded-b-md bg-sky-200" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 export const UserDashBoard = () => {
-  const { user } = useOutletContext();
+  const { user,setHeaderContent} = useOutletContext();
+
+  useEffect(() => {
+    setHeaderContent({
+      title: `WELCOME  ${user.username}👋`,
+      subtitle: "Your trusted healthcare companion starts here",
+    });
+  }, [setHeaderContent]);
+
+
   const dashboardHeaderCards = [
     {
       label: "Blood Group",
@@ -319,6 +376,8 @@ export const UserDashBoard = () => {
         />
         <DidYouKnowCard />
       </div>
+
+      <DashboardBottomStrip />
     </div>
   );
 };

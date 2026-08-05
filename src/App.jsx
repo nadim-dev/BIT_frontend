@@ -16,7 +16,7 @@ import { TicketDetails } from "./pages/TicketDetails";
 import { ProfilePage } from "./pages/Profile";
 import { ForgotPassPage } from "./pages/Forgot.jsx";
 import { ResetPasswordPage } from "./pages/Reset.jsx";
-
+import { NotificationPage } from "./pages/NotificationPage.jsx";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -108,6 +108,10 @@ const router=createBrowserRouter([
                 element:<MyTickets/>,
              },
              {
+                path:"/notifications",
+                element:<NotificationPage />
+             },
+             {
                 path:"/my-tickets/:ticketId",
                 element:<TicketDetails/>,
              },
@@ -147,10 +151,6 @@ const router=createBrowserRouter([
              {
                 path:"/nearby-blood-banks",
                 element:<DashboardPlaceholder title="Nearby Blood Banks" description="Explore blood banks and availability around you." />,
-             },
-             {
-                path:"/notifications",
-                element:<DashboardPlaceholder title="Notifications" description="See important updates, alerts, and account messages." />,
              },
              {
                 path:"/settings",

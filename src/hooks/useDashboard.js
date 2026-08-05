@@ -37,7 +37,6 @@ const menuItems = [
     title: "Notifications",
     icon: Bell,
     href: "/notifications",
-    badge: 3,
   },
   {
     title: "Settings",

@@ -5,7 +5,14 @@ import { logoutApi } from "../api/authApi";
 import { useAuth } from "../hooks/useAuth";
 import getInitials from "../utils/getInitial";
 
-export const Header = ({ user, title, subtitle, action, leftContent }) => {
+export const Header = ({
+  user,
+  title,
+  subtitle,
+  action,
+  leftContent,
+  unreadNotificationCount = 0,
+}) => {
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -76,16 +83,18 @@ export const Header = ({ user, title, subtitle, action, leftContent }) => {
           ) : null}
         </button>
 
-        <button
-          type="button"
+        <Link
+          to="/notifications"
           aria-label="Notifications"
-          className="relative grid size-9 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-800 shadow-sm transition hover:border-red-200 hover:bg-red-50"
+          className="relative cursor-pointer grid size-9 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-800 shadow-sm transition hover:border-red-200 hover:bg-red-50"
         >
           <Bell className="size-4" />
-          <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-[#fb2c36] text-[9px] font-bold text-white">
-            3
-          </span>
-        </button>
+          {unreadNotificationCount > 0 ? (
+            <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-[#fb2c36] text-[9px] font-bold text-white">
+              {unreadNotificationCount}
+            </span>
+          ) : null}
+        </Link>
 
         <div className="relative">
           <button

@@ -2,7 +2,7 @@ import { ChevronRight, Droplet, LogOut } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import getInitials from "../utils/getInitial";
 
-export default function Sidebar({ user, passUserMenu = [] }) {
+export default function Sidebar({ user,unreadNotificationCount, passUserMenu = [] }) {
   return (
     <aside className="hidden w-[238px] shrink-0 bg-[linear-gradient(180deg,#8f0000_0%,#b80d12_48%,#860000_100%)] p-3 text-white lg:flex lg:flex-col">
       <div className="flex items-center gap-2 px-1 py-2">
