@@ -17,6 +17,8 @@ import { ProfilePage } from "./pages/Profile";
 import { ForgotPassPage } from "./pages/Forgot.jsx";
 import { ResetPasswordPage } from "./pages/Reset.jsx";
 import { NotificationPage } from "./pages/NotificationPage.jsx";
+import { AdminEnquiryPage } from "./pages/Admin/AdminEnquery.jsx";
+import { AdminTicketsPage } from "./pages/Admin/AdminTicket.jsx";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -131,6 +133,14 @@ const router=createBrowserRouter([
              {
                 path:"/admin/dashboard",
                 element:<UserDashBoard />,
+             },
+             {
+               path:"/admin/enquiries",
+               element:<AdminEnquiryPage />
+             },
+             {
+               path:"/admin/tickets",
+               element:<AdminTicketsPage/>
              },
              {
                 path:"/emergency",

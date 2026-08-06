@@ -59,7 +59,7 @@ const contactDetails = [
 ];
 
 export const ContactUs=()=>{
-    const { setHeaderContent } = useOutletContext();
+    const { setHeaderContent,user } = useOutletContext();
     const [openFaq, setOpenFaq] = useState(null);
 
     useEffect(() => {
@@ -69,6 +69,25 @@ export const ContactUs=()=>{
         });
     }, [setHeaderContent]);
 
+    const subject = encodeURIComponent("BIT Support Request");
+
+    const body = encodeURIComponent(`Hello BIT Support Team,
+    
+    Name: ${user.username}
+    Email: ${user.email}
+    
+    Issue Category:
+    
+    Description:
+    --------------------------------------------------
+    
+    
+    Thank you,
+    ${user.username}
+    `);
+    
+    const mailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=khanm99098@gmail.com&su=${subject}&body=${body}`;
+    
     return (
         <div className="px-3 py-4 sm:px-5 lg:px-6">
             <section className="rounded-xl border border-red-100 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
@@ -197,13 +216,13 @@ export const ContactUs=()=>{
                     </div>
 
                     <a
-                      href="https://mail.google.com/mail/?view=cm&fs=1&to=khanm99098@gmail.com&su=Support%20Request&body=Hi%20BIT%20Care%20Team%2C%0A%0AI%20need%20help%20with..."
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-[#fb2c36] px-4 text-sm font-bold text-[#fb2c36] transition hover:bg-red-50"
+                       href={mailUrl}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-[#fb2c36] px-4 text-sm font-bold text-[#fb2c36] transition hover:bg-red-50"
                     >
                       <Mail className="size-4" />
-                      Send Email
+                      Email Support
                     </a>
                 </section>
             </div>
