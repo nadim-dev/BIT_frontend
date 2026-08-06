@@ -24,3 +24,22 @@ export const sendTicketMessage = (id, data) =>
           }
         : undefined,
   });
+
+export const getAllAdminTickets = () =>
+  axiosWithCreds.get("/api/support-tickets/admin/all");
+
+export const getAdminTicketByTicketId = (id) =>
+  axiosWithCreds.get(`/api/support-tickets/admin/${id}`);
+
+export const sendAdminTicketMessage = (id, data) =>
+  axiosWithCreds.post(`/api/support-tickets/admin/${id}/messages`, data, {
+    headers:
+      data instanceof FormData
+        ? {
+            "Content-Type": "multipart/form-data",
+          }
+        : undefined,
+  });
+
+export const updateAdminTicketStatus = (id, status) =>
+  axiosWithCreds.patch(`/api/support-tickets/admin/${id}/status`, { status });

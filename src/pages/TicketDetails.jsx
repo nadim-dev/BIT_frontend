@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import {AlertCircle,ArrowLeft,CalendarDays,CheckCircle2,Clock3,Eye,FileImage,Headphones,Image,LoaderCircle,Send,Tag,X} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AlertCircle, ArrowLeft, CalendarDays, CheckCircle2, Clock3, Eye, FileImage, LoaderCircle, Tag, X } from "lucide-react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { getTicketByTicketId, sendTicketMessage } from "../api/supportTicketApi";
 import { formatTicketDate } from "../utils/dateCustomization";
 import { useAuth } from "../hooks/useAuth";
-import getInitials from "../utils/getInitial";
+import { TicketConversation } from "../components/TicketConversation";
 
 const statusSteps = ["Open", "In Progress", "Resolved", "Closed"];
-const allowedReplyImageTypes = ["image/png", "image/jpg", "image/jpeg"];
-const maxReplyImageSize = 5 * 1024 * 1024;
 
 const statusMeta = {
   Open: {
@@ -115,241 +113,13 @@ function Timeline({ ticket }) {
   );
 }
 
-function Conversation({ messages }) {
-
-  const {currentUser}=useAuth();
-  
-  if (!messages.length) {
-    return (
-      <section className="flex h-[30rem] flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
-        <h2 className="text-sm font-extrabold text-slate-950">Conversation</h2>
-        <p className="mt-3 flex flex-1 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-500">
-          No messages yet.
-        </p>
-      </section>
-    );
-  }
-
-  return (
-    <section className="flex h-[30rem] flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
-      <h2 className="text-sm font-extrabold text-slate-950">Conversation</h2>
-      <div className="mt-3 flex-1 space-y-3 overflow-y-auto pr-2">
-        {messages.map((item) => {
-          const isAdmin = item.sender === "Admin";
-          const userPicture = currentUser?.picture;
-          const userInitials = getInitials(currentUser?.username);
-           
-          return (
-            <article
-              key={item._id || `${item.sender}-${item.createdAt}`}
-              className={`flex gap-3 rounded-xl px-4 py-3 ${
-                isAdmin ? "bg-red-50/80" : "bg-blue-50/60"
-              }`}
-            >
-              <span
-                className={`flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ${
-                  isAdmin ? "text-red-500" : "text-slate-600"
-                }`}
-              >
-                {isAdmin ? (
-                  <Headphones className="size-5" />
-                ) : userPicture ? (
-                  <img
-                    src={userPicture}
-                    alt={currentUser?.username || currentUser?.name || "User"}
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  <span className="text-xs font-extrabold">
-                    {userInitials}
-                  </span>
-                )}
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-extrabold text-slate-950">
-                    {isAdmin ? "Support Team" : "You"}
-                  </p>
-                  {isAdmin ? (
-                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-extrabold text-red-500">
-                      Admin
-                    </span>
-                  ) : null}
-                </div>
-                <p className="mt-1 whitespace-pre-line text-sm font-semibold leading-6 text-slate-700">
-                  {item.message}
-                </p>
-                {item.attachment ? (
-                  <a
-                    href={item.attachment}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700"
-                  >
-                    <Eye className="size-3.5" />
-                    {item.attachmentName || "View image"}
-                  </a>
-                ) : null}
-                <p className="mt-1.5 text-xs font-semibold text-slate-400">
-                  {formatTicketDate(item.createdAt)}
-                </p>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function ReplyComposer({ onSendMessage }) {
-  const [replyMessage, setReplyMessage] = useState("");
-  const [replyImage, setReplyImage] = useState(null);
-  const [isSending, setIsSending] = useState(false);
-  const [sendError, setSendError] = useState("");
-  const imageInputRef = useRef(null);
-
-  const validateReplyImage = (file) => {
-    if (!allowedReplyImageTypes.includes(file.type)) {
-      return "Only PNG, JPG, or JPEG images are supported.";
-    }
-
-    if (file.size > maxReplyImageSize) {
-      return "Image size must be 5MB or less.";
-    }
-
-    return "";
-  };
-
-  const handleImageChange = (event) => {
-    const file = event.target.files?.[0] || null;
-
-    if (!file) return;
-
-    const error = validateReplyImage(file);
-
-    if (error) {
-      setSendError(error);
-      event.target.value = "";
-      return;
-    }
-
-    setReplyImage(file);
-    setSendError("");
-  };
-
-  const removeReplyImage = () => {
-    setReplyImage(null);
-
-    if (imageInputRef.current) {
-      imageInputRef.current.value = "";
-    }
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const message = replyMessage.trim();
-
-    if (!message && !replyImage) {
-      setSendError("Message or image is required.");
-      return;
-    }
-
-    try {
-      setIsSending(true);
-      setSendError("");
-      await onSendMessage(message, replyImage);
-      setReplyMessage("");
-      removeReplyImage();
-    } catch (err) {
-      setSendError(err.message || "Unable to send reply.");
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)]"
-    >
-      <h2 className="text-sm font-extrabold text-slate-950">Reply to this ticket</h2>
-      <textarea
-        value={replyMessage}
-        onChange={(event) => {
-          setReplyMessage(event.target.value);
-          if (sendError) setSendError("");
-        }}
-        rows="2"
-        placeholder="Type your message..."
-        className="mt-3 w-full resize-none rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-red-300 focus:ring-4 focus:ring-red-500/10"
-      />
-      {sendError ? (
-        <p className="mt-2 flex items-center gap-1.5 text-xs font-bold text-red-500">
-          <AlertCircle className="size-3.5" />
-          {sendError}
-        </p>
-      ) : null}
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <input
-            ref={imageInputRef}
-            type="file"
-            accept=".png,.jpg,.jpeg,image/png,image/jpg,image/jpeg"
-            className="sr-only"
-            onChange={handleImageChange}
-          />
-          <button
-            type="button"
-            onClick={() => imageInputRef.current?.click()}
-            className="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
-            aria-label="Attach image"
-          >
-            <Image className="size-4" />
-          </button>
-          {replyImage ? (
-            <span className="inline-flex min-w-0 max-w-56 items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600">
-              <Image className="size-3.5 shrink-0 text-blue-500" />
-              <span className="truncate">{replyImage.name}</span>
-              <button
-                type="button"
-                onClick={removeReplyImage}
-                className="inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-red-50 hover:text-red-500"
-                aria-label="Remove image"
-              >
-                <X className="size-3.5" />
-              </button>
-            </span>
-          ) : null}
-        </div>
-        <button
-          type="submit"
-          disabled={isSending}
-          className="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#e50914] px-5 text-sm font-extrabold text-white transition hover:bg-[#c90812] disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {isSending ? (
-            <>
-              <LoaderCircle className="size-4 animate-spin" />
-              Sending...
-            </>
-          ) : (
-            <>
-              <Send className="size-4" />
-              Send Reply
-            </>
-          )}
-        </button>
-      </div>
-    </form>
-  );
-}
-
 export const TicketDetails = () => {
   const [ticketDetails, setTicketDetails] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const { setHeaderContent } = useOutletContext();
+  const { currentUser } = useAuth();
   const { ticketId } = useParams();
 
 
@@ -535,9 +305,12 @@ export const TicketDetails = () => {
 
         <Timeline ticket={ticketDetails} />
 
-        <Conversation messages={messages} />
-
-        <ReplyComposer onSendMessage={handleSendMessage} />
+        <TicketConversation
+          messages={messages}
+          user={currentUser}
+          onSendMessage={handleSendMessage}
+          emptyText="No messages yet."
+        />
 
         {ticketDetails.resolvedAt ? (
           <section className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
