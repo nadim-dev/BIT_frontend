@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {ArrowRight,ChevronDown,Droplets,Eye,Globe,Heart,HeartPulse,Hospital,Lock,LogIn,Mail,Quote,Users} from "lucide-react";
+import {ArrowRight,Droplets,Eye,Heart,HeartPulse,Hospital,Lock,LogIn,Mail,Quote,Truck,Users,X} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 import { useAuth } from "../hooks/useAuth";
@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 export function Login() {
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
+  const [isPartnerMenuOpen, setIsPartnerMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     email: "khanm99098@gmail.com",
     password: "12345678",
@@ -83,6 +84,24 @@ export function Login() {
       });
     }
   };
+
+  const partnerOptions = [
+    {
+      label: "Register Blood Bank",
+      actionUrl: "/register/blood-bank",
+      icon: Droplets,
+    },
+    {
+      label: "Register Hospital",
+      actionUrl: "/register/hospital",
+      icon: Hospital,
+    },
+    {
+      label: "Register Delivery Partner",
+      actionUrl: "/register/delivery-partner",
+      icon: Truck,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-white text-zinc-950">
@@ -266,10 +285,8 @@ export function Login() {
                     <div className="h-px flex-1 bg-zinc-200" />
                   </div>
                   <GoogleLogin
-                     
-        
                       onSuccess={async (credentialResponse) => {
-                        try{
+                        try{  
                         const data=await loginWithGoogle(credentialResponse.credential);
                         const currentUser = data.currentUser;
                         setCurrentUser(currentUser);
@@ -285,8 +302,6 @@ export function Login() {
                           form: "Login with Google failed",
                         });
                       }}
-                      useOneTap
-                      auto_select
                     />
                   <p className="text-center text-sm leading-5 text-[#71717b]">
                     Don't have an account?
@@ -298,12 +313,70 @@ export function Login() {
                       Create one
                     </span>
                   </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsPartnerMenuOpen(true)}
+                    className="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-2.5 text-sm font-bold text-[#fb2c36] transition hover:border-red-200 hover:bg-red-100"
+                  >
+                    Become a Partner
+                    <ArrowRight className="size-4" />
+                  </button>
                 
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {isPartnerMenuOpen ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-zinc-950/45 px-4">
+          <div className="w-full max-w-[430px] rounded-2xl border border-zinc-200 bg-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.28)] sm:p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[2.4px] text-[#fb2c36]">
+                  Become a Partner
+                </p>
+                <h3 className="mt-1 text-xl font-extrabold leading-7 text-zinc-950">
+                  Choose Partner Type
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPartnerMenuOpen(false)}
+                aria-label="Close partner options"
+                className="grid size-9 cursor-pointer place-items-center rounded-full border border-zinc-200 text-zinc-600 transition hover:border-red-200 hover:bg-red-50 hover:text-[#fb2c36]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              {partnerOptions.map((option) => {
+                const Icon = option.icon;
+
+                return (
+                  <Link
+                    key={option.actionUrl}
+                    to={option.actionUrl}
+                    className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-left transition hover:border-red-200 hover:bg-red-50"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="grid size-10 place-items-center rounded-full bg-[#fb2c36]/10 text-[#fb2c36]">
+                        <Icon className="size-5" />
+                      </span>
+                      <span className="text-sm font-extrabold text-zinc-900">
+                        {option.label}
+                      </span>
+                    </span>
+                    <ArrowRight className="size-4 shrink-0 text-[#fb2c36]" />
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

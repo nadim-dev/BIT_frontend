@@ -9,3 +9,14 @@ export const formatTicketDate = (value, fallback = "-") => {
     minute: "2-digit",
   }).format(new Date(value));
 };
+
+
+export const formatDateOnly = (value, fallback = "-") => {
+  if (!value) return fallback;
+
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
+};

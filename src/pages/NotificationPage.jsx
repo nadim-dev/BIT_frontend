@@ -9,7 +9,7 @@ import {
   Pill,
   Ticket,
 } from "lucide-react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { getNotifications, readAllNotification } from "../api/notificationApi.js";
 
 const notificationMeta = {
@@ -135,6 +135,8 @@ export const NotificationPage = () => {
     }, []);
   }, [notifications]);
 
+  const navigate=useNavigate();
+
   return (
     <div className="px-3 py-6 font-['Inter','Plus_Jakarta_Sans',sans-serif] sm:px-5 lg:px-8">
       {isLoading ? (
@@ -171,7 +173,8 @@ export const NotificationPage = () => {
                   return (
                     <article
                       key={notification._id}
-                      className="relative flex gap-4 rounded-2xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-[0_14px_34px_rgba(15,23,42,0.045)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(15,23,42,0.07)]"
+                      className="relative cursor-pointer flex gap-4 rounded-2xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-[0_14px_34px_rgba(15,23,42,0.045)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(15,23,42,0.07)]"
+                      onClick={()=>navigate(notification.actionUrl)}
                     >
                       <div className="flex shrink-0 items-start gap-2 pt-0.5">
                         {!notification.isRead ? (

@@ -1,4 +1,4 @@
-import {Bell,Ticket,CircleHelp,ClipboardList,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren} from "lucide-react";
+import {Bell,Ticket,Droplet,CircleHelp,ClipboardList,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren} from "lucide-react";
 import { useAuth } from "./useAuth";
 import { getDashboardPath } from "../utils/dashboardRoutes";
 
@@ -60,11 +60,19 @@ const menuItems = [
     title: "Settings",
     icon: Settings,
     href: "/settings",
+    show: (user) => user.role !== "Admin",
+  },
+  {
+  title: "Blood Banks",
+  icon: Droplets,
+  href: "/admin/blood-banks",
+  show: (user) => user?.role === "Admin",
   },
   {
     title: "Help & Support",
     icon: CircleHelp,
     href: "/support",
+    show: (user) => user.role !== "Admin",
   },
 ];
 

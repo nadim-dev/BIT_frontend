@@ -20,6 +20,10 @@ import { NotificationPage } from "./pages/NotificationPage.jsx";
 import { AdminEnquiryPage } from "./pages/Admin/AdminEnquery.jsx";
 import { AdminTicketsPage } from "./pages/Admin/AdminTicket.jsx";
 import { AdminTicketDetailsPage } from "./pages/Admin/AdminTicketDetails.jsx";
+import { BloodBankPage } from "./pages/NearbyBloodbank.jsx";
+import { BloodbankRegisteration } from "./pages/RegisterforBloodBank.jsx";
+import { AdminBloodBanks } from "./pages/Admin/AdminBloodBanks.jsx";
+import { BloodBankDetails } from "./pages/Admin/AdminBloodBankDetails.jsx";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -75,6 +79,10 @@ const router=createBrowserRouter([
     path:"/dashboard",
     element:<RoleRedirect />,
 },
+{
+   path:"/register/blood-bank",
+   element:<BloodbankRegisteration/>
+},
 {  path:"/reset-password/:token",
    element:<ResetPasswordPage />
 },
@@ -97,7 +105,6 @@ const router=createBrowserRouter([
                 path:"/profile",
                 element:<ProfilePage />
              },
-             
              {
                    path:"/support",
                    element:<ContactUs />
@@ -105,6 +112,10 @@ const router=createBrowserRouter([
              {
                    path:"/support/create-ticket",
                    element:<CreateSupportTicket />
+             },
+             {
+                    path:"/admin/blood-bank/:bloodBankId",
+                    element:<BloodBankDetails/>
              },
              {
                 path:"/my-tickets",
@@ -115,10 +126,13 @@ const router=createBrowserRouter([
                 element:<NotificationPage />
              },
              {
+                path:"/admin/blood-banks",
+                element:<AdminBloodBanks/>
+             },
+             {
                 path:"/my-tickets/:ticketId",
                 element:<TicketDetails/>,
              },
-             
              {
                 path:"/hospital/dashboard",
                 element:<UserDashBoard />,
@@ -165,7 +179,7 @@ const router=createBrowserRouter([
              },
              {
                 path:"/nearby-blood-banks",
-                element:<DashboardPlaceholder title="Nearby Blood Banks" description="Explore blood banks and availability around you." />,
+                element:<BloodBankPage/>,
              },
              {
                 path:"/settings",
