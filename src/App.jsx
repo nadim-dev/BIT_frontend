@@ -24,6 +24,7 @@ import { BloodBankPage } from "./pages/NearbyBloodbank.jsx";
 import { BloodbankRegisteration } from "./pages/RegisterforBloodBank.jsx";
 import { AdminBloodBanks } from "./pages/Admin/AdminBloodBanks.jsx";
 import { BloodBankDetails } from "./pages/Admin/AdminBloodBankDetails.jsx";
+import { BloodBankPublicDashboard } from "./pages/BloodBankPublicDashboard.jsx";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -140,6 +141,10 @@ const router=createBrowserRouter([
              {
                 path:"/blood-bank/dashboard",
                 element:<UserDashBoard />,
+             },
+             {
+                path:"/blood-bank/:bloodBankId/dashboard",
+                element:<BloodBankPublicDashboard />,
              },
              {
                 path:"/delivery-partner/dashboard",

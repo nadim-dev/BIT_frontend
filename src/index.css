@@ -33,6 +33,16 @@
 }
 
 @layer components {
+  .user-location-popup .leaflet-popup-content-wrapper {
+    border-radius: 10px;
+    padding: 0;
+  }
+
+  .user-location-popup .leaflet-popup-content {
+    margin: 8px 10px;
+    width: auto !important;
+  }
+
   .testimonial-scroll {
     scroll-behavior: smooth;
     scrollbar-width: thin;
