@@ -25,6 +25,10 @@ const notificationMeta = {
     icon: Ticket,
     iconClass: "bg-blue-50 text-blue-600",
   },
+  "Blood Bank": {
+    icon: Building2,
+    iconClass: "bg-red-50 text-[#fb2c36]",
+  },
   Donation: {
     icon: HeartPulse,
     iconClass: "bg-rose-50 text-rose-600",

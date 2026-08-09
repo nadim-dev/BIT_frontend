@@ -78,7 +78,7 @@ function StatusBadge({ status }) {
 
 function SectionCard({ title, icon: Icon, children, action }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
+    <section className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
       <div className="flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 text-sm font-extrabold text-slate-950">
           {Icon ? <Icon className="size-4 text-[#D90429]" /> : null}
@@ -86,16 +86,16 @@ function SectionCard({ title, icon: Icon, children, action }) {
         </h2>
         {action}
       </div>
-      <div className="mt-4">{children}</div>
+      <div className="mt-3">{children}</div>
     </section>
   );
 }
 
-function InfoGrid({ items }) {
+function InfoGrid({ items, className = "" }) {
   return (
-    <dl className="grid gap-3 sm:grid-cols-2">
+    <dl className={`grid gap-3 sm:grid-cols-2 ${className}`}>
       {items.map((item) => (
-        <div key={item.label} className="rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2.5">
+        <div key={item.label} className="min-h-20 rounded-lg border border-slate-100 bg-slate-50/70 px-4 py-3">
           <dt className="text-[11px] font-extrabold uppercase tracking-wide text-slate-400">{item.label}</dt>
           <dd className="mt-1 text-sm font-bold leading-5 text-slate-800">{item.value || "Not available"}</dd>
         </div>
@@ -126,29 +126,9 @@ function DetailButton({ children, tone = "neutral", ...props }) {
 function DocumentsSection({ bank }) {
   const documents = [
     {
-      name: "Blood Bank Registration Certificate",
-      url: "",
-      status: "Not submitted",
-    },
-    {
       name: "Blood Bank License",
       url: bank.licenseDocument.url,
       status: bank.licenseDocument.isVerified ? "Verified" : bank.licenseDocument.url ? "Submitted" : "Not submitted",
-    },
-    {
-      name: "Government Authorization",
-      url: "",
-      status: "Not submitted",
-    },
-    {
-      name: "Address Proof",
-      url: "",
-      status: "Not submitted",
-    },
-    {
-      name: "Other submitted documents",
-      url: "",
-      status: "Not submitted",
     },
   ];
 
@@ -196,9 +176,7 @@ function VerificationChecklist() {
     "Blood bank information verified",
     "Operator information verified",
     "Address verified",
-    "Registration certificate verified",
     "License verified",
-    "Authorization verified",
   ];
 
   return (
@@ -297,46 +275,7 @@ function StatusPanel({ bank, onAction, isUpdating }) {
   );
 }
 
-function ActivityTimeline({ bank }) {
-  const events = [
-    {
-      action: "Operator registered",
-      performedAt: bank.createdAt,
-      note: bank.contactPerson,
-    },
-    {
-      action: "Blood bank application submitted",
-      performedAt: bank.createdAt,
-      note: bank.applicationId,
-    },
-    {
-      action: "Documents uploaded",
-      performedAt: bank.createdAt,
-      note: bank.licenseDocument.url ? "License document submitted" : "No documents submitted",
-    },
-    ...bank.activityHistory,
-  ].sort((first, second) => new Date(second.performedAt) - new Date(first.performedAt));
 
-  return (
-    <SectionCard title="Verification / Activity History" icon={History}>
-      <div className="space-y-3">
-        {events.map((event, index) => (
-          <div key={`${event.action}-${index}`} className="grid grid-cols-[20px_minmax(0,1fr)] gap-3">
-            <span className="mt-1.5 size-2 rounded-full bg-[#D90429]" />
-            <div className="border-b border-slate-100 pb-3 last:border-b-0 last:pb-0">
-              <p className="text-sm font-extrabold text-slate-850">{event.action}</p>
-              <p className="mt-1 text-xs font-semibold text-slate-500">
-                {formatTicketDate(event.performedAt, "Not available")}
-                {event.performedBy ? ` by ${getUserName(event.performedBy)}` : ""}
-              </p>
-              {event.note ? <p className="mt-1 text-xs font-semibold text-slate-600">{event.note}</p> : null}
-            </div>
-          </div>
-        ))}
-      </div>
-    </SectionCard>
-  );
-}
 
 function ReasonModal({ action, onClose, onConfirm, isUpdating }) {
   const [reason, setReason] = useState("");
@@ -383,8 +322,8 @@ export const BloodBankDetails = () => {
 
   useEffect(() => {
     setHeaderContent({
-      title: undefined,
-      subtitle: undefined,
+      title: "Blood Bank Details",
+      subtitle: "Review registration, verification, and blood bank information.",
       action: undefined,
     });
   }, [setHeaderContent]);
@@ -431,7 +370,7 @@ export const BloodBankDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="px-3 py-4 sm:px-5 lg:px-6">
+      <div className="px-2 py-2 sm:px-4 lg:px-5">
         <div className="flex min-h-64 items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-500">
           <LoaderCircle className="mr-2 size-5 animate-spin text-[#D90429]" />
           Loading blood bank details...
@@ -442,7 +381,7 @@ export const BloodBankDetails = () => {
 
   if (error && !bloodBankDetails) {
     return (
-      <div className="px-3 py-4 sm:px-5 lg:px-6">
+      <div className="px-2 py-2 sm:px-4 lg:px-5">
         <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-4 text-sm font-bold text-red-600">
           <AlertCircle className="mr-2 inline size-4" />
           {error}
@@ -454,16 +393,13 @@ export const BloodBankDetails = () => {
   const bank = bloodBankDetails;
 
   return (
-    <div className="px-3 py-4 sm:px-5 lg:px-6">
-      <div className="mx-auto max-w-7xl space-y-4">
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div className="px-2 py-2 sm:px-4 lg:px-5">
+      <div className="w-full space-y-3">
+        <section className="rounded-xl border border-slate-200 bg-white px-4 py-3.5 shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
-              <Link to="/admin/blood-banks" className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-500 transition hover:text-[#D90429]">
-                <ArrowLeft className="size-4" />
-                Blood Banks
-              </Link>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
+              
+              <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-2xl font-extrabold tracking-normal text-slate-950">{bank.name}</h1>
                 <StatusBadge status={bank.status} />
               </div>
@@ -475,20 +411,6 @@ export const BloodBankDetails = () => {
                 </span>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {bank.status === "Pending" ? (
-                <>
-                  <DetailButton tone="danger" disabled={isUpdating} onClick={() => handleStatusAction("Rejected")}>Reject</DetailButton>
-                  <DetailButton tone="success" disabled={isUpdating} onClick={() => handleStatusAction("Approved")}>Approve</DetailButton>
-                </>
-              ) : null}
-              {bank.status === "Approved" ? (
-                <DetailButton tone="danger" disabled={isUpdating} onClick={() => handleStatusAction("Suspended")}>Suspend</DetailButton>
-              ) : null}
-              {bank.status === "Suspended" || bank.status === "Rejected" ? (
-                <DetailButton disabled={isUpdating} onClick={() => handleStatusAction("Pending")}>Reconsider</DetailButton>
-              ) : null}
-            </div>
           </div>
         </section>
 
@@ -499,10 +421,11 @@ export const BloodBankDetails = () => {
           </div>
         ) : null}
 
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <main className="space-y-4">
+        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_520px] 2xl:grid-cols-[minmax(0,1fr)_580px]">
+          <div>
             <SectionCard title="Blood Bank Information" icon={Building2}>
               <InfoGrid
+                className="2xl:grid-cols-3"
                 items={[
                   { label: "Blood Bank Name", value: bank.name },
                   { label: "Registration ID", value: bank.applicationId },
@@ -514,47 +437,12 @@ export const BloodBankDetails = () => {
                 ]}
               />
             </SectionCard>
+          </div>
 
-            <SectionCard title="Location" icon={MapPin}>
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-                <InfoGrid
-                  items={[
-                    { label: "Complete Address", value: bank.address.completeAddress },
-                    { label: "City", value: bank.address.city },
-                    { label: "District", value: bank.address.district },
-                    { label: "State", value: bank.address.state },
-                    { label: "Pincode", value: bank.address.pincode },
-                    { label: "Latitude", value: coordinates?.latitude?.toFixed(6) },
-                    { label: "Longitude", value: coordinates?.longitude?.toFixed(6) },
-                  ]}
-                />
-                <div className="h-64 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                  {coordinates ? (
-                    <MapContainer center={[coordinates.latitude, coordinates.longitude]} zoom={14} scrollWheelZoom={false} className="h-full w-full">
-                      <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      <Marker icon={mapIcon} position={[coordinates.latitude, coordinates.longitude]} />
-                    </MapContainer>
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-sm font-bold text-slate-500">Location coordinates unavailable.</div>
-                  )}
-                </div>
-              </div>
-            </SectionCard>
-
-            <DocumentsSection bank={bank} />
-            <StatusPanel bank={bank} onAction={handleStatusAction} isUpdating={isUpdating} />
-            <ActivityTimeline bank={bank} />
-          </main>
-
-          <aside className="space-y-4">
+          <aside className="space-y-3">
             <SectionCard
               title="Blood Bank Operator"
               icon={UserRound}
-              action={
-                <button type="button" className="text-xs font-extrabold text-[#D90429] hover:underline">
-                  View Operator Profile
-                </button>
-              }
             >
               <div className="flex items-center gap-3">
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-red-50 text-sm font-extrabold text-[#D90429]">
@@ -568,7 +456,7 @@ export const BloodBankDetails = () => {
               <div className="mt-4 space-y-3 text-sm font-semibold text-slate-600">
                 <p className="flex min-w-0 items-center gap-2">
                   <Mail className="size-4 shrink-0 text-slate-400" />
-                  <span className="truncate">{bank.email}</span>
+                  <span className="break-all">{bank.email}</span>
                 </p>
                 <p className="flex min-w-0 items-center gap-2">
                   <Phone className="size-4 shrink-0 text-slate-400" />
@@ -585,14 +473,41 @@ export const BloodBankDetails = () => {
               <InfoGrid
                 items={[
                   { label: "License Number", value: bank.licenseNumber },
-                  { label: "Created", value: formatTicketDate(bank.createdAt, "Not available") },
                   { label: "Last Updated", value: formatTicketDate(bank.updatedAt, "Not available") },
-                  { label: "Status", value: bank.status },
                 ]}
               />
             </SectionCard>
           </aside>
         </div>
+
+        <SectionCard title="Location" icon={MapPin}>
+          <div className="grid gap-3 xl:grid-cols-[minmax(360px,0.85fr)_minmax(0,1.15fr)]">
+            <InfoGrid
+              className="lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3"
+              items={[
+                { label: "Complete Address", value: bank.address.completeAddress },
+                { label: "City", value: bank.address.city },
+                { label: "District", value: bank.address.district },
+                { label: "State", value: bank.address.state },
+                { label: "Latitude", value: coordinates?.latitude?.toFixed(6) },
+                { label: "Longitude", value: coordinates?.longitude?.toFixed(6) },
+              ]}
+            />
+            <div className="h-72 min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 2xl:h-80">
+              {coordinates ? (
+                <MapContainer center={[coordinates.latitude, coordinates.longitude]} zoom={14} scrollWheelZoom={false} className="h-full w-full">
+                  <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <Marker icon={mapIcon} position={[coordinates.latitude, coordinates.longitude]} />
+                </MapContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm font-bold text-slate-500">Location coordinates unavailable.</div>
+              )}
+            </div>
+          </div>
+        </SectionCard>
+
+        <DocumentsSection bank={bank} />
+        <StatusPanel bank={bank} onAction={handleStatusAction} isUpdating={isUpdating} />
       </div>
 
       {modalAction ? (
