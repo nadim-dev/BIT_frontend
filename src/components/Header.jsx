@@ -240,6 +240,12 @@ export const Header = ({
                 </div>
               </div>
 
+              {user?.role === "BloodBank" ? (
+                <p className="mt-2.5 rounded-lg bg-red-50 px-3 py-2 text-sm font-extrabold text-[#fb2c36]">
+                  Blood Bank Operator
+                </p>
+              ) : null}
+
               <button
                 type="button"
                 onClick={handleLogout}

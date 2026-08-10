@@ -18,6 +18,21 @@ export const getNearbyBloodBanks = (coordinates) =>
 export const getPublicBloodBank = (bloodBankId) =>
   axiosWithCreds.get(`/api/blood-banks/${bloodBankId}`);
 
+export const createBloodRequest = (bloodBankId, data) =>
+  axiosWithCreds.post(`/api/blood-banks/${bloodBankId}/requests`, data);
+
+export const getMyBloodRequests = () =>
+  axiosWithCreds.get("/api/blood-banks/requests/my");
+
+export const getMyBloodBankProfile = () =>
+  axiosWithCreds.get("/api/blood-banks/me/profile");
+
+export const updateMyBloodBankProfile = (profileData) =>
+  axiosWithCreds.patch("/api/blood-banks/me/profile", profileData);
+
+export const cancelMyBloodRequest = (requestId) =>
+  axiosWithCreds.patch(`/api/blood-banks/requests/${requestId}/cancel`);
+
 export const fetchParticularBloodBank=(bloodBankId)=>
   axiosWithCreds.get(`/api/blood-banks/admin/${bloodBankId}`)
 

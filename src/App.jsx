@@ -25,6 +25,9 @@ import { BloodbankRegisteration } from "./pages/RegisterforBloodBank.jsx";
 import { AdminBloodBanks } from "./pages/Admin/AdminBloodBanks.jsx";
 import { BloodBankDetails } from "./pages/Admin/AdminBloodBankDetails.jsx";
 import { BloodBankPublicDashboard } from "./pages/BloodBankPublicDashboard.jsx";
+import { UsersAllRequest } from "./pages/UserRequest.jsx";
+import { BloodBankDashbaord } from "./pages/Blood_Bank/BloodbankDashboard.jsx";
+import { BloodBankProfile } from "./pages/Blood_Bank/BloodBankProfile.jsx";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -140,7 +143,22 @@ const router=createBrowserRouter([
              },
              {
                 path:"/blood-bank/dashboard",
-                element:<UserDashBoard />,
+                element:<BloodBankDashbaord />,
+             },
+             { path:"/blood-bank/profile",
+               element:<BloodBankProfile />
+             },
+             {
+                path:"/blood-bank/requests",
+                element:<DashboardPlaceholder title="Requests" description="Review and manage incoming blood requests from here." />,
+             },
+             {
+                path:"/blood-bank/inventory",
+                element:<DashboardPlaceholder title="Inventory" description="Update blood stock, component availability, and processing details from here." />,
+             },
+             {
+                path:"/blood-bank/dispatch",
+                element:<DashboardPlaceholder title="Dispatch" description="Track prepared orders and delivery handoffs from here." />,
              },
              {
                 path:"/blood-bank/:bloodBankId/dashboard",
@@ -171,8 +189,8 @@ const router=createBrowserRouter([
                 element:<DashboardPlaceholder title="Emergency Help" description="Request urgent blood support and track emergency actions from here." />,
              },
              {
-                path:"/requests",
-                element:<DashboardPlaceholder title="My Requests" description="View and manage your blood requests in one place." />,
+                path:"/my-requests",
+                element:<UsersAllRequest/>,
              },
              {
                 path:"/my-donations",

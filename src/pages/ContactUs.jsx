@@ -35,6 +35,39 @@ const faqs = [
     },
 ];
 
+const bloodBankFAQs = [
+    {
+        question: "How do I manage blood requests?",
+        answer:
+            "Go to Requests to review incoming requests, then accept or reject them based on your available inventory.",
+    },
+    {
+        question: "How do I update my blood inventory?",
+        answer:
+            "Go to Inventory to add, update, or remove blood units and maintain accurate stock information.",
+    },
+    {
+        question: "How do I update processing charges?",
+        answer:
+            "Open Inventory settings and update the processing charge for each blood component you provide.",
+    },
+    {
+        question: "How do I mark blood as ready for pickup?",
+        answer:
+            "After preparing the requested blood, open the request and mark it as Ready for Pickup so the delivery process can begin.",
+    },
+    {
+        question: "What should I do if I cannot fulfill a request?",
+        answer:
+            "Reject the request and provide a reason so the user is informed and can look for another blood bank.",
+    },
+    {
+        question: "How do I keep users informed about request progress?",
+        answer:
+            "Update the request status whenever it changes so users can see whether their blood request is accepted, prepared, or ready for pickup.",
+    },
+];
+
 const contactDetails = [
     {
         icon: Mail,
@@ -61,11 +94,12 @@ const contactDetails = [
 export const ContactUs=()=>{
     const { setHeaderContent,user } = useOutletContext();
     const [openFaq, setOpenFaq] = useState(null);
+    const activeFaqs = user?.role === "BloodBank" ? bloodBankFAQs : faqs;
 
     useEffect(() => {
         setHeaderContent({
             title: "Help & Support",
-            subtitle: "We're here to help you. Find answers or contact our team.",
+            subtitle:  user?.role === "BloodBank" ? "We're here to help you manage your blood bank smoothly." : "We're here to help you. Find answers or contact our team.",
         });
     }, [setHeaderContent]);
 
@@ -144,7 +178,7 @@ export const ContactUs=()=>{
                     </div>
 
                     <div className="space-y-3">
-                        {faqs.map((faq, index) => {
+                        {activeFaqs.map((faq, index) => {
                             const isOpen = openFaq === index;
 
                             return (

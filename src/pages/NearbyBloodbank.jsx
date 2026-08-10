@@ -36,9 +36,12 @@ const getWorkingHours = (bank) => {
 };
 
 const bloodGroupOrder = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+const bloodComponents = ["PRBC", "Platelets", "Plasma"];
 
-const getInventoryUnits = (bank, bloodGroup) => {
-  const inventoryItem = bank.inventory?.find((item) => item.bloodGroup === bloodGroup);
+const getInventoryUnits = (bank, bloodGroup, component = "PRBC") => {
+  const inventoryItem = bank.inventory?.find(
+    (item) => item.bloodGroup === bloodGroup && (item.type || item.component || "PRBC") === component,
+  );
   const units = Number(inventoryItem?.unitsAvailable || 0);
 
   return String(Number.isFinite(units) ? units : 0).padStart(2, "0");
@@ -268,11 +271,18 @@ export const BloodBankPage = () => {
                         </p>
                         <div className="rounded-lg border border-slate-100 bg-slate-50 px-2.5 py-2">
                           <p className="text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Blood Availability</p>
-                          <div className="mt-1.5 grid grid-cols-4 gap-x-2 gap-y-1">
-                            {bloodGroupOrder.map((bloodGroup) => (
-                              <div key={bloodGroup} className="flex items-center justify-between rounded bg-white px-1.5 py-1 text-[11px] font-bold tabular-nums text-slate-700">
-                                <span className="text-slate-500">{bloodGroup}</span>
-                                <span className="text-slate-950">{getInventoryUnits(bank, bloodGroup)}</span>
+                          <div className="mt-1.5 space-y-1.5">
+                            {bloodComponents.map((component) => (
+                              <div key={component}>
+                                <p className="mb-1 text-[10px] font-extrabold text-slate-500">{component}</p>
+                                <div className="grid grid-cols-4 gap-x-2 gap-y-1">
+                                  {bloodGroupOrder.map((bloodGroup) => (
+                                    <div key={`${component}-${bloodGroup}`} className="flex items-center justify-between rounded bg-white px-1.5 py-1 text-[11px] font-bold tabular-nums text-slate-700">
+                                      <span className="text-slate-500">{bloodGroup}</span>
+                                      <span className="text-slate-950">{getInventoryUnits(bank, bloodGroup, component)}</span>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             ))}
                           </div>
