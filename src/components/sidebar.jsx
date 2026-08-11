@@ -67,7 +67,7 @@ export default function Sidebar({ user,unreadNotificationCount, passUserMenu = [
 
       <div className="space-y-3">
         <NavLink
-          to={user?.role === "BloodBank" ? "/blood-bank/profile" : "/profile"}
+          to="/profile"
           className="block rounded-2xl border border-white/15 bg-white/10 p-2 shadow-xl shadow-black/10 backdrop-blur transition hover:bg-white/15"
         >
           <div className="flex items-center gap-2">

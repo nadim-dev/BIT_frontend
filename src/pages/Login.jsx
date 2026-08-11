@@ -14,8 +14,8 @@ export function Login() {
   const { setCurrentUser } = useAuth();
   const [isPartnerMenuOpen, setIsPartnerMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
-    email: "khanm99098@gmail.com",
-    password: "12345678",
+    email: "billu123@gmail.com",
+    password: "nad@1234",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});

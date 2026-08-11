@@ -30,6 +30,15 @@ export const getMyBloodBankProfile = () =>
 export const updateMyBloodBankProfile = (profileData) =>
   axiosWithCreds.patch("/api/blood-banks/me/profile", profileData);
 
+export const addMyBloodBankInventory = (inventoryData) =>
+  axiosWithCreds.post("/api/blood-banks/me/inventory", inventoryData);
+
+export const updateMyBloodBankInventory = (inventoryId, inventoryData) =>
+  axiosWithCreds.patch(`/api/blood-banks/me/inventory/${inventoryId}`, inventoryData);
+
+export const deleteMyBloodBankInventory = (inventoryId) =>
+  axiosWithCreds.delete(`/api/blood-banks/me/inventory/${inventoryId}`);
+
 export const cancelMyBloodRequest = (requestId) =>
   axiosWithCreds.patch(`/api/blood-banks/requests/${requestId}/cancel`);
 
@@ -41,3 +50,7 @@ export const updateAdminBloodBankStatus = (bloodBankId, status, reason = "") =>
     status,
     reason,
   });
+
+
+export const getAllInventory=()=>
+  axiosWithCreds.get("/api/blood-bank")
