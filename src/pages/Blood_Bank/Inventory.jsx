@@ -573,7 +573,7 @@ export const BloodBankInventory = () => {
                           onClick={() =>
                             setOpenActionId((currentId) => (currentId === item._id ? "" : item._id))
                           }
-                          className="grid h-8 w-8 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                          className="grid h-8 w-8 place-items-center cursor-pointer rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
                           aria-label={`Open actions for ${item.bloodGroup} ${item.component}`}
                         >
                           <MoreVertical size={16} />

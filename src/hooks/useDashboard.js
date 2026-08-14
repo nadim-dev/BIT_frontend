@@ -1,4 +1,4 @@
-import {Bell,Building2,CircleHelp,ClipboardList,Droplet,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren,Ticket,Truck} from "lucide-react";
+import {Bell,Building2,Bike,CircleHelp,ClipboardList,Droplet,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren,Ticket} from "lucide-react";
 import { useAuth } from "./useAuth";
 import { getDashboardPath } from "../utils/dashboardRoutes";
 
@@ -28,18 +28,6 @@ const menuItems = [
     show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
   },
   {
-    title: "Enquiries",
-    icon: Inbox,
-    href: "/admin/enquiries",
-    show: (user) => user.role === "Admin",
-  },
-  {
-    title: "Tickets",
-    icon: MessageSquareText,
-    href: "/admin/tickets",
-    show: (user) => user.role === "Admin",
-  },
-  {
     title: "Nearby Hospitals",
     icon: Hospital,
     href: "/nearby-hospitals",
@@ -62,12 +50,6 @@ const menuItems = [
     icon: Settings,
     href: "/settings",
     show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
-  },
-  {
-  title: "Blood Banks",
-  icon: Droplets,
-  href: "/admin/blood-banks",
-  show: (user) => user?.role === "Admin",
   },
   {
     title: "Help & Support",
@@ -95,7 +77,7 @@ const bloodBankMenuItems = [
   },
   {
     title: "Dispatch",
-    icon: Truck,
+    icon: Bike,
     href: "/blood-bank/dispatch",
   },
   {
@@ -115,6 +97,40 @@ const bloodBankMenuItems = [
   },
 ];
 
+const adminMenuItems = [
+  {
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/admin/dashboard",
+  },
+  {
+    title: "Enquiries",
+    icon: Inbox,
+    href: "/admin/enquiries",
+  },
+  {
+    title: "Tickets",
+    icon: MessageSquareText,
+    href: "/admin/tickets",
+  },
+    {
+    title: "Notifications",
+    icon: Bell,
+    href: "/notifications",
+  },
+  {
+    title: "Blood Banks",
+    icon: Droplets,
+    href: "/admin/blood-banks",
+  },
+  {
+    title:"Delivery Partners",
+    icon:Bike,
+    href:"/admin/delivery-partner"
+  }
+];
+
+
 const getDisplayLocation = (currentUser) => {
   if (currentUser?.short_address) return currentUser.short_address;
 
@@ -124,7 +140,8 @@ const getDisplayLocation = (currentUser) => {
 };
 
 export const useDashboard = () => {
-  const {currentUser}=useAuth()
+  const {currentUser}=useAuth();
+  
   const user = {
     ...currentUser,
     username: currentUser?.username || currentUser?.name || "User",
@@ -136,7 +153,12 @@ export const useDashboard = () => {
     imageUrl: currentUser?.imageUrl || currentUser?.avatar || currentUser?.picture || "",
   };
 
-  const roleMenuItems = user.role === "BloodBank" ? bloodBankMenuItems : menuItems;
+  const roleMenuItems =
+    user.role === "BloodBank"
+      ? bloodBankMenuItems
+      : user.role === "Admin"
+        ? adminMenuItems
+        : menuItems;
 
   const userMenu = roleMenuItems
     .filter((item) => !item.show || item.show(user))

@@ -7,6 +7,7 @@ import { formatTicketDate } from "../utils/dateCustomization.js";
 const statusTone = {
   Pending: "bg-amber-50 text-amber-700 ring-amber-100",
   Approved: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  ReadyToDispatch: "bg-blue-50 text-blue-700 ring-blue-100",
   Rejected: "bg-red-50 text-red-700 ring-red-100",
   Cancelled: "bg-slate-100 text-slate-600 ring-slate-200",
   Completed: "bg-emerald-50 text-emerald-700 ring-emerald-100",
@@ -23,6 +24,7 @@ const getTotalUnits = (items = []) =>
   items.reduce((total, item) => total + Number(item.quantity || 0), 0);
 
 const getStatusText = (request) => {
+  if (request.deliveryStatus === "ReadyToDispatch") return "Ready to dispatch";
   if (request.requestStatus === "Pending") return "Waiting for blood bank confirmation";
   if (request.requestStatus === "Approved" && request.deliveryStatus === "NotAssigned") return "Accepted by blood bank";
   if (request.deliveryStatus === "OutForDelivery") return "Out for delivery";
@@ -31,11 +33,19 @@ const getStatusText = (request) => {
   return request.requestStatus || "Pending";
 };
 
+const getDisplayStatus = (request) =>
+  request.deliveryStatus === "ReadyToDispatch" ? "Ready to dispatch" : request.requestStatus || "Pending";
+
+const getStatusTone = (request) =>
+  request.deliveryStatus === "ReadyToDispatch"
+    ? statusTone.ReadyToDispatch
+    : statusTone[request.requestStatus] || statusTone.Pending;
+
 const getCompletedSteps = (request) => {
   const completed = new Set(["requested"]);
 
   if (["Approved", "Completed"].includes(request.requestStatus)) completed.add("accepted");
-  if (["Assigned", "PickedUp", "OutForDelivery", "Delivered"].includes(request.deliveryStatus)) completed.add("accepted");
+  if (["ReadyToDispatch", "Assigned", "PickedUp", "OutForDelivery", "Delivered"].includes(request.deliveryStatus)) completed.add("accepted");
   if (["OutForDelivery", "Delivered"].includes(request.deliveryStatus)) completed.add("delivery");
   if (request.deliveryStatus === "Delivered" || request.requestStatus === "Completed") completed.add("delivered");
 
@@ -69,7 +79,6 @@ function RequestCard({ request, isCancelling, onCancel }) {
   const bank = request.bloodBankId || {};
   const primaryItem = getPrimaryItem(request);
   const totalUnits = getTotalUnits(request.items);
-  const progressPercent = getProgressPercent(request);
   const canCancel = request.requestStatus === "Pending";
 
   const handleCancelClick = () => {
@@ -78,31 +87,26 @@ function RequestCard({ request, isCancelling, onCancel }) {
   };
 
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_38px_rgba(15,23,42,0.07)] transition hover:-translate-y-0.5 hover:border-red-100 hover:shadow-[0_18px_48px_rgba(217,4,41,0.11)]">
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 w-1 bg-[#D90429]" />
-        <div className="p-4 sm:p-5">
-          <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-2.5">
-            <span className="grid size-12 shrink-0 place-items-center rounded-full bg-red-50 text-[#D90429] ring-8 ring-red-50/50">
-              <Droplet className="size-5 fill-[#D90429]" />
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_44px_rgba(15,23,42,0.1)]">
+      <div className="p-4 sm:p-5">
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-red-50 text-red-600 ring-1 ring-red-100">
+              <Droplet className="size-5 fill-red-500" />
             </span>
             <div className="min-w-0">
-              <h2 className="text-base font-black leading-5 text-slate-950">Blood Request</h2>
-              <p className="mt-0.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+              <h2 className="text-lg font-black leading-6 text-slate-950">Blood Request</h2>
+              <p className="mt-1 font-mono text-sm font-black text-slate-500">
                 {request.requestNumber || "Request number unavailable"}
-                <Copy className="size-3" />
               </p>
             </div>
           </div>
-          <div className="flex shrink-0 items-start gap-3">
-            <div className="text-right">
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black ring-1 ${statusTone[request.requestStatus] || statusTone.Pending}`}>
-                <Clock3 className="size-3" />
-                {request.requestStatus || "Pending"}
-              </span>
-              <p className="mt-2 text-[11px] font-semibold text-slate-500">{getStatusText(request)}</p>
-            </div>
+
+          <div className="flex items-center gap-2 sm:justify-self-end">
+            <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-black ${getStatusTone(request)}`}>
+              <Clock3 className="size-3.5" />
+              {getDisplayStatus(request)}
+            </span>
             {canCancel ? (
               <div className="relative">
                 <button
@@ -110,17 +114,17 @@ function RequestCard({ request, isCancelling, onCancel }) {
                   aria-label="Open request actions"
                   aria-expanded={isMenuOpen}
                   onClick={() => setIsMenuOpen((current) => !current)}
-                  className="grid size-7 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  className="grid size-8 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                 >
                   <MoreVertical className="size-4" />
                 </button>
                 {isMenuOpen ? (
-                  <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-slate-200 bg-white p-1.5 text-left shadow-[0_14px_30px_rgba(15,23,42,0.14)]">
+                  <div className="absolute right-0 top-9 z-10 w-40 rounded-lg border border-slate-200 bg-white p-1.5 text-left shadow-[0_14px_30px_rgba(15,23,42,0.14)]">
                     <button
                       type="button"
                       disabled={isCancelling}
                       onClick={handleCancelClick}
-                      className="flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-[11px] font-black text-[#D90429] transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-[11px] font-black text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {isCancelling ? <LoaderCircle className="size-3.5 animate-spin" /> : <XCircle className="size-3.5" />}
                       Cancel Request
@@ -132,46 +136,34 @@ function RequestCard({ request, isCancelling, onCancel }) {
           </div>
         </div>
 
-          <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
-            <RequestSummaryPill icon={Droplet} tone="bg-red-100 text-[#D90429]" label="Blood Group" value={primaryItem.bloodGroup || "Mixed"} />
-            <RequestSummaryPill icon={PackageCheck} tone="bg-rose-100 text-rose-700" label="Product" value={primaryItem.component || "Multiple"} />
-            <RequestSummaryPill icon={ClipboardList} tone="bg-sky-100 text-sky-700" label="Units" value={`${totalUnits} Unit${totalUnits === 1 ? "" : "s"}`} />
+        <div className="mt-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600 ring-1 ring-slate-200">
+              <Building2 className="size-4.5" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase text-slate-400">Requested from</p>
+              <p className="truncate text-sm font-black text-slate-950">{bank.bloodBankName || "Blood bank unavailable"}</p>
+            </div>
           </div>
+          <div className="flex items-center gap-2 text-xs font-black text-slate-500 sm:justify-self-end">
+            <CalendarDays className="size-4 text-blue-600" />
+            {formatTicketDate(request.createdAt, "Not available")}
+          </div>
+        </div>
 
-          <div className="mt-4 grid gap-3 rounded-lg border border-slate-100 bg-white p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-600">
-                <Building2 className="size-5" />
-              </span>
-              <div className="min-w-0">
-                <h3 className="truncate text-sm font-black leading-5 text-slate-950">{bank.bloodBankName || "Blood bank unavailable"}</h3>
-                <p className="mt-0.5 flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
-                  <MapPin className="size-3 shrink-0" />
-                  <span className="truncate">{getBankAddress(bank)}</span>
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-[11px] font-black text-slate-500">
-              <CalendarDays className="size-3.5 text-slate-400" />
-              {formatTicketDate(request.createdAt, "Not available")}
-            </div>
-          </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          <RequestSummaryPill icon={Droplet} tone="bg-red-100 text-red-600" label="Group" value={primaryItem.bloodGroup || "Mixed"} />
+          <RequestSummaryPill icon={PackageCheck} tone="bg-rose-100 text-rose-700" label="Component" value={primaryItem.component || "Multiple"} />
+          <RequestSummaryPill icon={ClipboardList} tone="bg-sky-100 text-sky-700" label="Units" value={`${totalUnits} Unit${totalUnits === 1 ? "" : "s"}`} />
+        </div>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px] sm:items-center">
-            <div>
-              <div className="flex items-center justify-between gap-3 text-[11px] font-black text-slate-500">
-                <span>Request progress</span>
-                <span>{request.requestStatus || "Pending"}</span>
-              </div>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                <div className="h-full rounded-full bg-[#D90429] transition-all" style={{ width: `${progressPercent}%` }} />
-              </div>
-            </div>
-            <Link to="/my-requests" className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-[#D90429] px-4 text-xs font-black text-white shadow-[0_12px_24px_rgba(217,4,41,0.2)] transition hover:bg-[#b80322]">
-              <Truck className="size-4" />
-              Track Request
-            </Link>
-          </div>
+        <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs font-bold text-slate-500">{getStatusText(request)}</p>
+          <Link to="/my-requests" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-red-600 px-4 text-xs font-black text-white shadow-[0_10px_22px_rgba(220,38,38,0.2)] transition hover:bg-red-700">
+            <Truck className="size-4" />
+            Track Request
+          </Link>
         </div>
       </div>
     </article>

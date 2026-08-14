@@ -24,6 +24,20 @@ export const createBloodRequest = (bloodBankId, data) =>
 export const getMyBloodRequests = () =>
   axiosWithCreds.get("/api/blood-banks/requests/my");
 
+export const getIncomingBloodBankRequests = () =>
+  axiosWithCreds.get("/api/blood-banks/requests/incoming");
+
+export const approveIncomingBloodBankRequest = (requestId) =>
+  axiosWithCreds.patch(`/api/blood-banks/requests/incoming/${requestId}/approve`);
+
+export const markIncomingBloodBankRequestReadyToDispatch = (requestId) =>
+  axiosWithCreds.patch(`/api/blood-banks/requests/incoming/${requestId}/ready-to-dispatch`);
+
+export const rejectIncomingBloodBankRequest = (requestId, reason = "") =>
+  axiosWithCreds.patch(`/api/blood-banks/requests/incoming/${requestId}/reject`, {
+    reason,
+  });
+
 export const getMyBloodBankProfile = () =>
   axiosWithCreds.get("/api/blood-banks/me/profile");
 

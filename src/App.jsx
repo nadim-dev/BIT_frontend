@@ -29,6 +29,11 @@ import { UsersAllRequest } from "./pages/UserRequest.jsx";
 import { BloodBankDashbaord } from "./pages/Blood_Bank/BloodbankDashboard.jsx";
 import { BloodBankProfile } from "./pages/Blood_Bank/BloodBankProfile.jsx";
 import { BloodBankInventory } from "./pages/Blood_Bank/Inventory.jsx";
+import { RequestToBloodBank } from "./pages/Blood_Bank/RequestToBloodBank.jsx";
+import { DeliveryPartnerRegisteration } from "./pages/Delivery_Partnet/DeliveryPartnerRegistration.jsx";
+import { AdminDeliveryPartner } from "./pages/Admin/AdminDeliveryPartner.jsx";
+import { DeliveryPartnetDetails } from "./pages/Admin/AdminDeliveryPartnerDetails.jsx";
+
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -88,6 +93,10 @@ const router=createBrowserRouter([
    path:"/register/blood-bank",
    element:<BloodbankRegisteration/>
 },
+{
+   path:"/register/delivery-partner",
+   element:<DeliveryPartnerRegisteration />
+},
 {  path:"/reset-password/:token",
    element:<ResetPasswordPage />
 },
@@ -102,25 +111,33 @@ const router=createBrowserRouter([
                 path:"/user/dashboard",
                 element:<UserDashBoard />,
              },
-             {path:"/become-donor",
+             {
+             path:"/become-donor",
              element:<BecomeDonor />
             },
-
-             { 
+            {
+              path:"/admin/delivery-partner",
+              element:<AdminDeliveryPartner/>
+            },
+            { 
                 path:"/profile",
                 element:<ProfilePage />
-             },
-             {
+            },
+            {
                    path:"/support",
                    element:<ContactUs />
-             },
-             {
+            },
+            {
                    path:"/support/create-ticket",
                    element:<CreateSupportTicket />
-             },
+            },
              {
                     path:"/admin/blood-bank/:bloodBankId",
                     element:<BloodBankDetails/>
+             },
+             {
+                   path:"/admin/delivery-partners/:partnerId",
+                   element:<DeliveryPartnetDetails/>
              },
              {
                 path:"/my-tickets",
@@ -155,7 +172,11 @@ const router=createBrowserRouter([
              },
              {
                 path:"/blood-bank/requests",
-                element:<DashboardPlaceholder title="Requests" description="Review and manage incoming blood requests from here." />,
+                element:<RequestToBloodBank/>,
+             },
+             {
+                path:"/delivery-partner/register",
+                element:<DeliveryPartnerRegisteration />
              },
              {
                 path:"/blood-bank/inventory",
