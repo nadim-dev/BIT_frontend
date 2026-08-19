@@ -33,6 +33,14 @@ import { RequestToBloodBank } from "./pages/Blood_Bank/RequestToBloodBank.jsx";
 import { DeliveryPartnerRegisteration } from "./pages/Delivery_Partnet/DeliveryPartnerRegistration.jsx";
 import { AdminDeliveryPartner } from "./pages/Admin/AdminDeliveryPartner.jsx";
 import { DeliveryPartnetDetails } from "./pages/Admin/AdminDeliveryPartnerDetails.jsx";
+import { HospitalRegisteration } from "./pages/Hospital/HospitalRegisteration.jsx";
+import { AdminHospital } from "./pages/Admin/AdminHospital.jsx";
+import { AdminHospitalDetails } from "./pages/Admin/AdminHospitalDetails.jsx";
+import { NearByHospital } from "./pages/NearBYHospital.jsx";
+import { HospitalPublicDashboard } from "./pages/HospitalPublicDashboard.jsx";
+import { DeliveryRequest } from "./pages/Delivery_Partnet/DeliveryReques.jsx";
+import { MyDeliveries } from "./pages/Delivery_Partnet/MyDeliveries.jsx";
+import { TrackingUserOrder } from "./pages/UserTarckingPage.jsx";
 
 
 function ProtectedLayout() {
@@ -100,7 +108,14 @@ const router=createBrowserRouter([
 {  path:"/reset-password/:token",
    element:<ResetPasswordPage />
 },
-
+ {
+   path:"/delivery-partner/register",
+   element:<DeliveryPartnerRegisteration />
+ },
+{
+   path:"/register/hospital",
+   element:<HospitalRegisteration/>
+},
   {
     element:<ProtectedLayout />,
 
@@ -118,6 +133,14 @@ const router=createBrowserRouter([
             {
               path:"/admin/delivery-partner",
               element:<AdminDeliveryPartner/>
+            },
+             {
+               path:"/admin/hospitals",
+               element:<AdminHospital/>
+            },
+            {
+               path:"/admin/hospitals/:hospitalId",
+               element:<AdminHospitalDetails/>
             },
             { 
                 path:"/profile",
@@ -138,6 +161,10 @@ const router=createBrowserRouter([
              {
                    path:"/admin/delivery-partners/:partnerId",
                    element:<DeliveryPartnetDetails/>
+             },
+             {
+               path:"/my-requests/:bloodrequestId",
+               element:<TrackingUserOrder/>
              },
              {
                 path:"/my-tickets",
@@ -175,8 +202,8 @@ const router=createBrowserRouter([
                 element:<RequestToBloodBank/>,
              },
              {
-                path:"/delivery-partner/register",
-                element:<DeliveryPartnerRegisteration />
+                path:"/delivery-partner/request",
+                element:<DeliveryRequest/>
              },
              {
                 path:"/blood-bank/inventory",
@@ -219,21 +246,26 @@ const router=createBrowserRouter([
                 element:<UsersAllRequest/>,
              },
              {
-                path:"/my-donations",
-                element:<DashboardPlaceholder title="My Donations" description="Track donation history and upcoming eligibility." />,
+                path:"/nearby-hospitals",
+                element:<NearByHospital />,
              },
              {
-                path:"/nearby-hospitals",
-                element:<DashboardPlaceholder title="Nearby Hospitals" description="Find hospitals near your location that can help with blood requests." />,
+                path:"/hospitals/:hospitalId/dashboard",
+                element:<HospitalPublicDashboard />,
              },
              {
                 path:"/nearby-blood-banks",
                 element:<BloodBankPage/>,
              },
+             
              {
                 path:"/settings",
                 element:<DashboardPlaceholder title="Settings" description="Control dashboard preferences and account settings." />,
              },
+             {
+               path:"/my-deliveries",
+               element:<MyDeliveries/>
+             }
     ],
        
   }],

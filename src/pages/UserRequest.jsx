@@ -160,7 +160,7 @@ function RequestCard({ request, isCancelling, onCancel }) {
 
         <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs font-bold text-slate-500">{getStatusText(request)}</p>
-          <Link to="/my-requests" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-red-600 px-4 text-xs font-black text-white shadow-[0_10px_22px_rgba(220,38,38,0.2)] transition hover:bg-red-700">
+          <Link to={`/my-requests/${request._id}`} className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-red-600 px-4 text-xs font-black text-white shadow-[0_10px_22px_rgba(220,38,38,0.2)] transition hover:bg-red-700">
             <Truck className="size-4" />
             Track Request
           </Link>

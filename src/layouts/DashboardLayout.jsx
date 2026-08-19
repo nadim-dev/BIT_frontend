@@ -5,11 +5,14 @@ import { Header } from "../components/Header";
 import Sidebar from "../components/sidebar";
 import { useDashboard } from "../hooks/useDashboard";
 import { getUnreadNotificationCount } from "../api/notificationApi";
+import { io } from "socket.io-client";
+
 
 export default function DashboardLayout() {
   const { currentUser: user, userMenu } = useDashboard();
   const { pathname } = useLocation();
   const hideSidebar = pathname === "/become-donor";
+  
   const [headerContent, setHeaderContent] = useState({
     title: undefined,
     subtitle: undefined,
@@ -17,6 +20,7 @@ export default function DashboardLayout() {
   });
 
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const [deliveryPartnerSocket, setDeliveryPartnerSocket] = useState(null);
 
   useEffect(() => {
     const fetchUnreadNotificationCount = async () => {
@@ -31,6 +35,40 @@ export default function DashboardLayout() {
 
     fetchUnreadNotificationCount();
   }, []);
+
+
+  useEffect(() => {
+    if (!user?._id || !["DeliveryPartner", "BloodBank", "User","Donor"].includes(user.role)) {
+      setDeliveryPartnerSocket(null);
+      return;
+    }
+
+    const socket = io(import.meta.env.VITE_API_URL, {
+      withCredentials: true,
+      transports: ["websocket"],
+    });
+
+    setDeliveryPartnerSocket(socket);
+
+    socket.on("connect", () => {
+      console.log(`${user.role} socket connected:`, socket.id);
+    });
+
+    socket.on("newNotification", () => {
+      setUnreadNotificationCount((currentCount) => currentCount + 1);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log(`${user.role} socket disconnected:`, reason);
+    });
+
+    return () => {
+      setDeliveryPartnerSocket(null);
+      socket.off("newNotification");
+      socket.disconnect();
+    };
+  }, [user?._id, user?.role]);
+
 
   const donorHeaderBrand = (
     <div className="flex items-center gap-2">
@@ -61,7 +99,7 @@ export default function DashboardLayout() {
             unreadNotificationCount={unreadNotificationCount}
           />
           <div className="min-h-0 flex-1 overflow-y-auto">
-            <Outlet context={{ user, setHeaderContent,unreadNotificationCount, setUnreadNotificationCount}} />
+            <Outlet context={{ user, setHeaderContent,unreadNotificationCount, setUnreadNotificationCount, deliveryPartnerSocket}} />
           </div>
         </section>
       </div>

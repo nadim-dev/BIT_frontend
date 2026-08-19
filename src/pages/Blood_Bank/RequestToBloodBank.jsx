@@ -9,6 +9,7 @@ import {
   MessageSquareText,
   PackageCheck,
   Phone,
+  Truck,
   X,
 } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
@@ -17,6 +18,7 @@ import {
   getIncomingBloodBankRequests,
   markIncomingBloodBankRequestReadyToDispatch,
   rejectIncomingBloodBankRequest,
+  generatePickupOtp,
 } from "../../api/bloodBankApi";
 import { formatTicketDate } from "../../utils/dateCustomization";
 import getInitials from "../../utils/getInitial";
@@ -37,6 +39,9 @@ const getStatusTone = (request = {}) =>
   request.deliveryStatus === "ReadyToDispatch"
     ? statusClass.ReadyToDispatch
     : statusClass[request.requestStatus] || statusClass.Pending;
+
+const getDeliveryStatusLabel = (status) =>
+  status === "OnTheWayToPickup" ? "On the Way" : status || "Assigned";
 
 const getTotalUnits = (items = []) =>
   items.reduce((total, item) => total + Number(item.quantity || 0), 0);
@@ -69,14 +74,29 @@ function UserAvatar({ name, imageUrl }) {
 }
 
 function BloodRequestCard({ request, isUpdating, onApprove, onReject, onReadyToDispatch }) {
+  const [pickupOtp, setPickupOtp] = useState("");
+  const [isGeneratingOtp, setIsGeneratingOtp] = useState(false);
   const items = request.items || [];
   const primaryItem = items[0] || {};
   const requestedBy = getRequesterName(request);
   const requesterImage = request.userId?.picture || request.userId?.imageUrl || request.userId?.imageURL || "";
   const totalUnits = getTotalUnits(items);
+  const deliveryPartnerName = request.deliveryPartnerName || request.deliveryPartnerId?.fullName;
   const canAct = request.requestStatus === "Pending";
   const canMarkReadyToDispatch =
     request.requestStatus === "Approved" && request.deliveryStatus === "NotAssigned";
+
+  const handleGeneratePickupOtp = async () => {
+    try {
+      setIsGeneratingOtp(true);
+      const response = await generatePickupOtp(request._id);
+      setPickupOtp(response?.otp || "");
+    } catch (error) {
+      setPickupOtp(error.message || "Unable to generate OTP.");
+    } finally {
+      setIsGeneratingOtp(false);
+    }
+  };
 
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_44px_rgba(15,23,42,0.1)]">
@@ -174,19 +194,67 @@ function BloodRequestCard({ request, isUpdating, onApprove, onReject, onReadyToD
             </button>
           </div>
         ) : null}
+
+        {deliveryPartnerName ? (
+          <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-slate-600">
+              <Truck className="size-4 text-blue-600" />
+              Delivery
+            </div>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+              <div className="space-y-1 text-sm font-bold text-slate-700">
+                <p>Delivery Partner: <span className="font-black text-slate-950">{deliveryPartnerName}</span></p>
+                <p>Status: <span className="font-black text-slate-950">{getDeliveryStatusLabel(request.deliveryStatus)}</span></p>
+                {request.deliveryStatus === "OnTheWayToPickup" ? (
+                  <button type="button" onClick={handleGeneratePickupOtp} disabled={isGeneratingOtp} className="mt-2 rounded-lg bg-blue-600 px-3 py-2 text-xs font-black text-white disabled:opacity-50">
+                    {isGeneratingOtp ? "Generating..." : "Generate Pickup OTP"}
+                  </button>
+                ) : null}
+                {request.deliveryStatus === "OnTheWayToPickup" && pickupOtp ? (
+                  <p className="pt-1 text-lg font-black tracking-[0.25em] text-blue-700">OTP: {pickupOtp}</p>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-blue-200 bg-white px-4 text-xs font-black text-blue-700 transition hover:bg-blue-50"
+              >
+                View Delivery
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </article>
   );
 }
 
+function CompletedBloodRequestCard({ request }) {
+  const item = request.items?.[0] || {};
+  const addressText = (address = {}) => [address.completeAddress, address.city, address.state, address.pincode].filter(Boolean).join(", ") || "Address unavailable";
+
+  return (
+    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"><CheckCircle2 className="size-5" /></span><div><p className="text-sm font-black text-slate-950">Completed</p><p className="mt-1 font-mono text-xs font-black text-slate-500">{request.requestNumber || "Request number unavailable"}</p></div></div>
+        <p className="text-xs font-bold text-slate-500">{formatTicketDate(request.updatedAt || request.createdAt, "Date unavailable")}</p>
+      </div>
+      <p className="mt-4 text-sm font-black text-slate-800">Delivered by {request.deliveryPartnerId?.fullName || "delivery partner unavailable"} <span className="mx-2 text-slate-300">•</span> {item.bloodGroup || "Mixed"} {item.component || "Blood"}</p>
+      <p className="mt-1 text-xs font-bold text-slate-500">Quantity: {item.quantity || 0} Unit{Number(item.quantity) === 1 ? "" : "s"}</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center"><div className="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-100"><p className="text-[10px] font-black uppercase text-red-600">Pickup</p><p className="mt-1 text-xs font-black text-slate-800">{request.bloodBankId?.bloodBankName || "Blood bank"}</p><p className="mt-0.5 text-[11px] font-semibold text-slate-500">{addressText(request.bloodBankId?.address)}</p></div><span className="hidden text-xl text-slate-400 sm:block">→</span><div className="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-100"><p className="text-[10px] font-black uppercase text-emerald-600">Delivery</p><p className="mt-1 text-xs font-black text-slate-800">{request.patient?.name || "Recipient"}</p><p className="mt-0.5 text-[11px] font-semibold text-slate-500">{addressText(request.deliveryAddress)}</p></div></div>
+      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 border-t border-slate-100 pt-3 text-xs font-black text-slate-600"><span>Collection: Rs. {request.payment?.amount ?? "-"}</span><span>{request.payment?.collectionMethod || "Payment unavailable"}</span></div>
+    </article>
+  );
+}
+
 export const RequestToBloodBank = () => {
-  const { setHeaderContent } = useOutletContext();
+  const { setHeaderContent, deliveryPartnerSocket } = useOutletContext();
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingRequestId, setUpdatingRequestId] = useState("");
   const [error, setError] = useState("");
   const [rejectionRequest, setRejectionRequest] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [activeTab, setActiveTab] = useState("active");
 
   useEffect(() => {
     setHeaderContent({
@@ -213,10 +281,56 @@ export const RequestToBloodBank = () => {
     fetchRequests();
   }, []);
 
+  useEffect(() => {
+    if (!deliveryPartnerSocket) return;
+
+    const handleDeliveryPartnerAssigned = (assignment) => {
+      setRequests((currentRequests) =>
+        currentRequests.map((request) =>
+          String(request._id) === String(assignment.bloodRequestId)
+            ? {
+                ...request,
+                deliveryPartnerId: assignment.deliveryPartnerId,
+                deliveryRequestId: assignment.deliveryRequestId,
+                deliveryPartnerName: assignment.deliveryPartnerName,
+                deliveryStatus: assignment.deliveryStatus || "Assigned",
+              }
+            : request,
+        ),
+      );
+    };
+
+    const handleDeliveryStatusUpdated = (statusUpdate) => {
+      setRequests((currentRequests) =>
+        currentRequests.map((request) =>
+          String(request._id) === String(statusUpdate.bloodRequestId)
+            ? {
+                ...request,
+                deliveryStatus: statusUpdate.deliveryStatus,
+                requestStatus: statusUpdate.requestStatus || request.requestStatus,
+              }
+            : request,
+        ),
+      );
+    };
+
+    deliveryPartnerSocket.on("deliveryPartnerAssigned", handleDeliveryPartnerAssigned);
+    deliveryPartnerSocket.on("deliveryStatusUpdated", handleDeliveryStatusUpdated);
+
+    return () => {
+      deliveryPartnerSocket.off("deliveryPartnerAssigned", handleDeliveryPartnerAssigned);
+      deliveryPartnerSocket.off("deliveryStatusUpdated", handleDeliveryStatusUpdated);
+    };
+  }, [deliveryPartnerSocket]);
+
   const sortedRequests = useMemo(
     () => [...requests].sort((first, second) => new Date(second.createdAt) - new Date(first.createdAt)),
     [requests],
   );
+
+  const completedRequests = sortedRequests.filter((request) => request.requestStatus === "Completed" || request.deliveryStatus === "Delivered");
+  const activeRequests = sortedRequests.filter((request) => !completedRequests.some((completed) => completed._id === request._id));
+  const visibleRequests = activeTab === "active" ? activeRequests : completedRequests;
 
   const handleReject = (requestId) => {
     setRejectionRequest(requests.find((request) => request._id === requestId) || null);
@@ -308,8 +422,15 @@ export const RequestToBloodBank = () => {
           </div>
         ) : null}
 
-        {sortedRequests.length ? (
-          sortedRequests.map((request) => (
+        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+          <button type="button" onClick={() => setActiveTab("active")} className={`min-w-36 rounded-md cursor-pointer px-5 py-2 text-xs font-black transition ${activeTab === "active" ? "bg-red-50 text-red-600 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>Active ({activeRequests.length})</button>
+          <button type="button"  onClick={() => setActiveTab("completed")} className={`min-w-36 rounded-md cursor-pointer px-5 py-2 text-xs font-black transition ${activeTab === "completed" ? "bg-red-50 text-red-600 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>Completed ({completedRequests.length})</button>
+        </div>
+
+        {visibleRequests.length ? (
+          visibleRequests.map((request) => activeTab === "completed" ? (
+            <CompletedBloodRequestCard key={request._id} request={request} />
+          ) : (
             <BloodRequestCard
               key={request._id}
               request={request}
@@ -322,7 +443,7 @@ export const RequestToBloodBank = () => {
         ) : (
           <div className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm">
             <ClipboardList className="mx-auto size-10 text-slate-300" />
-            <h2 className="mt-3 text-base font-black text-slate-950">No incoming requests yet</h2>
+            <h2 className="mt-3 text-base font-black text-slate-950">No {activeTab} requests yet</h2>
             <p className="mt-1 text-sm font-semibold text-slate-500">
               New user requests for your blood bank will appear here.
             </p>

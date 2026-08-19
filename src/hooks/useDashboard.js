@@ -1,4 +1,4 @@
-import {Bell,Building2,Bike,CircleHelp,ClipboardList,Droplet,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren,Ticket} from "lucide-react";
+import {Bell,Building2,Wallet,UsersRound,PackageCheck,Cross,Bike,CircleHelp,ClipboardList,Droplet,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren,Ticket} from "lucide-react";
 import { useAuth } from "./useAuth";
 import { getDashboardPath } from "../utils/dashboardRoutes";
 
@@ -10,16 +10,9 @@ const menuItems = [
     href: (user) => getDashboardPath(user.role),
   },
   {
-    title: "Emergency Help",
-    icon: Siren,
-    href: "/emergency",
-    show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
-  },
-  {
     title: "My Requests",
     icon: ClipboardList,
-    href: "/my-requests",
-    show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
+    href: "/my-requests"
   },
   {
     title: "My Tickets",
@@ -31,31 +24,31 @@ const menuItems = [
     title: "Nearby Hospitals",
     icon: Hospital,
     href: "/nearby-hospitals",
-    show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
   },
   {
     title: "Nearby Blood Banks",
     icon: Droplets,
     href: "/nearby-blood-banks",
-    show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
+  },
+  {
+    title:"Nearby Donors",
+    icon: UsersRound,
+    href:"/nearby-donors"
   },
   {
     title: "Notifications",
     icon: Bell,
     href: "/notifications",
-    show: (user) => user.role !== "BloodBank",
   },
   {
     title: "Settings",
     icon: Settings,
     href: "/settings",
-    show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
   },
   {
     title: "Help & Support",
     icon: CircleHelp,
     href: "/support",
-    show: (user) => user.role !== "Admin",
   },
 ];
 
@@ -76,9 +69,10 @@ const bloodBankMenuItems = [
     href: "/blood-bank/inventory",
   },
   {
-    title: "Dispatch",
-    icon: Bike,
-    href: "/blood-bank/dispatch",
+    title: "My Tickets",
+    icon: Ticket,
+    href: "/my-tickets",
+    show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
   },
   {
     title: "Notifications",
@@ -119,6 +113,11 @@ const adminMenuItems = [
     href: "/notifications",
   },
   {
+    title:"Users",
+    icon:UsersRound,
+    href:"/users"
+  },
+  {
     title: "Blood Banks",
     icon: Droplets,
     href: "/admin/blood-banks",
@@ -127,8 +126,51 @@ const adminMenuItems = [
     title:"Delivery Partners",
     icon:Bike,
     href:"/admin/delivery-partner"
+  },
+  {
+   title: "Hospitals",
+   icon: Building2,
+   href: "/admin/hospitals",
   }
 ];
+
+const DeliveryPartnerMenuItems=[
+  {
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    href: (user) => getDashboardPath(user.role),
+  },
+  {
+    title: "Delivery Requests",
+    icon: ClipboardList,
+    href: "/delivery-partner/request",
+  },
+  {
+  title: "My Deliveries",
+  icon: PackageCheck,
+  href: "/my-deliveries",
+},
+{
+  title: "Earnings",
+  icon: Wallet,
+  href: "/earnings",
+},
+  {
+    title: "My Tickets",
+    icon: Ticket,
+    href: "/my-tickets",
+  },
+  {
+    title: "Notifications",
+    icon: Bell,
+    href: "/notifications",
+  },
+  {
+    title: "Help & Support",
+    icon: CircleHelp,
+    href: "/support",
+  },
+]; 
 
 
 const getDisplayLocation = (currentUser) => {
@@ -158,7 +200,7 @@ export const useDashboard = () => {
       ? bloodBankMenuItems
       : user.role === "Admin"
         ? adminMenuItems
-        : menuItems;
+        : user.role == "DeliveryPartner" ?  DeliveryPartnerMenuItems  : menuItems;
 
   const userMenu = roleMenuItems
     .filter((item) => !item.show || item.show(user))

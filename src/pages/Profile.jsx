@@ -115,7 +115,7 @@ export const ProfilePage = () => {
   const avatar = previewAvatar || user?.picture;
   const memberSince = getMemberSince(user);
   const hasPassword = Boolean(user?.hasPassword);
-  const isBloodBankUser = user?.role === "BloodBank";
+  const shouldShowDonorCta = !user?.isDonor && !["Admin", "DeliveryPartner", "Hospital", "BloodBank"].includes(user?.role);
 
   useEffect(() => {
     setHeaderContent({
@@ -416,7 +416,7 @@ export const ProfilePage = () => {
 
   return (
     <div className="space-y-5 py-4">
-      {!user?.isDonor && !isBloodBankUser ? <BecomeDonorCta /> : null}
+      {shouldShowDonorCta ? <BecomeDonorCta /> : null}
 
       <section className="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm">
         <div className="bg-zinc-50 px-5 py-5 sm:px-7">

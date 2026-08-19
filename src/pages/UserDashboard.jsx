@@ -272,6 +272,7 @@ function DashboardBottomStrip() {
 
 export const UserDashBoard = () => {
   const { user,setHeaderContent} = useOutletContext();
+  const shouldShowDonorCta = !["Admin", "DeliveryPartner", "Hospital"].includes(user?.role);
 
   useEffect(() => {
     setHeaderContent({
@@ -355,7 +356,7 @@ export const UserDashBoard = () => {
         })}
       </div>
 
-      <BecomeDonorCta />
+      {shouldShowDonorCta ? <BecomeDonorCta /> : null}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_290px]">
         <NearbyResourceCard
