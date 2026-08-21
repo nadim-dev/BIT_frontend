@@ -41,6 +41,7 @@ import { HospitalPublicDashboard } from "./pages/HospitalPublicDashboard.jsx";
 import { DeliveryRequest } from "./pages/Delivery_Partnet/DeliveryReques.jsx";
 import { MyDeliveries } from "./pages/Delivery_Partnet/MyDeliveries.jsx";
 import { TrackingUserOrder } from "./pages/UserTarckingPage.jsx";
+import { RegisteredUsers } from "./pages/Admin/MontinoritngUsrers.jsx";
 
 
 function ProtectedLayout() {
@@ -129,6 +130,10 @@ const router=createBrowserRouter([
              {
              path:"/become-donor",
              element:<BecomeDonor />
+            },
+            {
+              path:"/users",
+              element:<RegisteredUsers />
             },
             {
               path:"/admin/delivery-partner",

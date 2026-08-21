@@ -205,16 +205,16 @@ export const AdminTicketDetailsPage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setHeaderContent({
-      title: undefined,
-      subtitle: undefined,
-      action: {
-        to: "/admin/tickets",
-        label: "Back to Support Tickets",
-        icon: ArrowLeft,
-      },
-    });
-  }, [setHeaderContent]);
+  setHeaderContent({
+    title: "Ticket Details",
+    subtitle: "Review the support request and manage its status.",
+    action: {
+      to: "/admin/tickets",
+      label: "Back to Support Tickets",
+      icon: ArrowLeft,
+    },
+  });
+}, [setHeaderContent]);
 
   useEffect(() => {
     const fetchTicketDetails = async () => {

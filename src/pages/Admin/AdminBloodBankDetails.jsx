@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import L from "leaflet";
-import {AlertCircle,ArrowLeft,Ban,Building2,CalendarDays,CheckCircle2,ClipboardCheck,ExternalLink,FileCheck2,FileText,History,LoaderCircle,Mail,MapPin,Phone,RotateCcw,ShieldCheck,UserRound,X,XCircle} from "lucide-react";
+import {AlertCircle,ArrowLeft,Ban,Building2,CalendarDays,CheckCircle2,ClipboardCheck,Droplet,ExternalLink,FileCheck2,FileText,History,LoaderCircle,Mail,MapPin,Phone,RotateCcw,ShieldCheck,UserRound,X,XCircle} from "lucide-react";
 import { Link, useOutletContext, useParams } from "react-router-dom";
 import {fetchParticularBloodBank,updateAdminBloodBankStatus} from "../../api/bloodBankApi";
 import { formatDateOnly, formatTicketDate } from "../../utils/dateCustomization";
@@ -13,6 +13,9 @@ const statusClass = {
   Rejected: "bg-red-50 text-red-700 ring-red-200",
   Suspended: "bg-slate-100 text-slate-700 ring-slate-200",
 };
+
+const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+const inventoryTypes = ["PRBC", "Platelets", "Plasma"];
 
 const mapIcon = L.divIcon({
   className: "",
@@ -63,9 +66,15 @@ const normalizeBloodBank = (bloodBank) => {
     workingHours: bloodBank.workingHours || {},
     licenseNumber: bloodBank.licenseNumber || "Not available",
     licenseDocument: bloodBank.licenseDocument || {},
+    inventory: bloodBank.inventory || [],
     review: bloodBank.review || {},
     activityHistory: bloodBank.activityHistory || [],
   };
+};
+
+const getInventoryUnits = (inventory, type, bloodGroup) => {
+  const item = inventory.find((entry) => entry.type === type && entry.bloodGroup === bloodGroup);
+  return String(Number(item?.unitsAvailable || 0)).padStart(2, "0");
 };
 
 function StatusBadge({ status }) {
@@ -115,7 +124,7 @@ function DetailButton({ children, tone = "neutral", ...props }) {
   return (
     <button
       type="button"
-      className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg border px-4 text-xs font-extrabold transition disabled:cursor-not-allowed disabled:opacity-60 ${tones[tone]}`}
+      className={`inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 text-xs font-extrabold transition disabled:cursor-not-allowed disabled:opacity-60 ${tones[tone]}`}
       {...props}
     >
       {children}
@@ -289,7 +298,7 @@ function ReasonModal({ action, onClose, onConfirm, isUpdating }) {
             <h2 className="text-lg font-extrabold text-slate-950">{title}</h2>
             <p className="mt-1 text-sm font-semibold text-slate-500">Enter a clear reason for the admin record.</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Close modal">
+          <button type="button" onClick={onClose} className="cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Close modal">
             <X className="size-4" />
           </button>
         </div>
@@ -311,6 +320,48 @@ function ReasonModal({ action, onClose, onConfirm, isUpdating }) {
   );
 }
 
+function InventoryModal({ bank, onClose }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-3 py-5 backdrop-blur-sm">
+      <section className="w-full max-w-md overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-4 py-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-base font-extrabold text-slate-950">
+              <Droplet className="size-4 text-[#D90429]" />
+              Blood Availability
+            </h2>
+            <p className="mt-0.5 text-xs font-bold text-slate-500">{bank.name}</p>
+          </div>
+          <button type="button" onClick={onClose} className="cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Close inventory modal">
+            <X className="size-4" />
+          </button>
+        </div>
+
+        <div className="max-h-[70vh] overflow-y-auto bg-slate-50 p-3.5">
+          <div className="rounded-xl border border-slate-200 bg-slate-100/70 p-3">
+            <p className="text-[11px] font-extrabold uppercase tracking-wide text-slate-500">Blood Availability</p>
+            <div className="mt-3 space-y-3.5">
+              {inventoryTypes.map((type) => (
+                <div key={type}>
+                  <h3 className="text-xs font-extrabold text-slate-600">{type}</h3>
+                  <div className="mt-2 grid grid-cols-4 gap-1.5">
+                    {bloodGroups.map((bloodGroup) => (
+                      <div key={`${type}-${bloodGroup}`} className="flex h-8 items-center justify-between rounded-md bg-white px-2 text-xs font-extrabold shadow-sm shadow-slate-200/40">
+                        <span className="text-slate-500">{bloodGroup}</span>
+                        <span className="text-slate-950">{getInventoryUnits(bank.inventory, type, bloodGroup)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export const BloodBankDetails = () => {
   const { bloodBankId } = useParams();
   const { setHeaderContent } = useOutletContext();
@@ -319,6 +370,7 @@ export const BloodBankDetails = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState("");
   const [modalAction, setModalAction] = useState("");
+  const [showInventoryModal, setShowInventoryModal] = useState(false);
 
   useEffect(() => {
     setHeaderContent({
@@ -411,6 +463,14 @@ export const BloodBankDetails = () => {
                 </span>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => setShowInventoryModal(true)}
+              className="inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-red-100 bg-red-50 px-3 text-[11px] font-extrabold text-[#D90429] transition hover:border-[#D90429] hover:bg-white"
+            >
+              <Droplet className="size-3.5" />
+              View Inventory
+            </button>
           </div>
         </section>
 
@@ -518,6 +578,7 @@ export const BloodBankDetails = () => {
           onConfirm={handleStatusAction}
         />
       ) : null}
+      {showInventoryModal ? <InventoryModal bank={bank} onClose={() => setShowInventoryModal(false)} /> : null}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import {Bell,Building2,Wallet,UsersRound,PackageCheck,Cross,Bike,CircleHelp,ClipboardList,Droplet,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren,Ticket} from "lucide-react";
+import {Bell,CircleAlert,Building2,BrainCircuit,Wallet,UsersRound,PackageCheck,Cross,Bike,CircleHelp,ClipboardList,Droplet,Droplets,Hospital,Inbox,LayoutDashboard,MessageSquareText,Settings,Siren,Ticket} from "lucide-react";
 import { useAuth } from "./useAuth";
 import { getDashboardPath } from "../utils/dashboardRoutes";
 
@@ -59,7 +59,7 @@ const bloodBankMenuItems = [
     href: "/blood-bank/dashboard",
   },
   {
-    title: "Requests",
+    title: "Blood Requests",
     icon: ClipboardList,
     href: "/blood-bank/requests",
   },
@@ -69,15 +69,19 @@ const bloodBankMenuItems = [
     href: "/blood-bank/inventory",
   },
   {
-    title: "My Tickets",
-    icon: Ticket,
-    href: "/my-tickets",
-    show: (user) => user.role !== "Admin" && user.role !== "BloodBank",
+    title: "AI Demand Prediction",
+    icon: BrainCircuit,
+    href: "/blood-bank/ai-demand-prediction",
   },
   {
     title: "Notifications",
     icon: Bell,
     href: "/notifications",
+  },
+  {
+    title: "My Issues",
+    icon: CircleAlert,
+    href: "/my-tickets",
   },
   {
     title: "Blood Bank Profile",
