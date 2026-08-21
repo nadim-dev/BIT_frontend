@@ -42,7 +42,7 @@ import { DeliveryRequest } from "./pages/Delivery_Partnet/DeliveryReques.jsx";
 import { MyDeliveries } from "./pages/Delivery_Partnet/MyDeliveries.jsx";
 import { TrackingUserOrder } from "./pages/UserTarckingPage.jsx";
 import { RegisteredUsers } from "./pages/Admin/MontinoritngUsrers.jsx";
-
+import { AIdemandPrediction } from "./pages/Blood_Bank/AIdemandPrediction.jsx";
 
 function ProtectedLayout() {
   console.log("Protected layout function is running");
@@ -215,8 +215,8 @@ const router=createBrowserRouter([
                 element:<DashboardPlaceholder title="Inventory" description="Update blood stock, component availability, and processing details from here." />,
              },
              {
-                path:"/blood-bank/dispatch",
-                element:<DashboardPlaceholder title="Dispatch" description="Track prepared orders and delivery handoffs from here." />,
+                path:"/blood-bank/ai-demand-prediction",
+                element:<AIdemandPrediction/>
              },
              {
                 path:"/blood-bank/:bloodBankId/dashboard",

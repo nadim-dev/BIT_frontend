@@ -99,3 +99,7 @@ export const startDelivery = (requestId) =>
 
 export const completeDelivery=(requestId)=>
   axiosWithCreds.patch(`/delivery-requests/${requestId}/complete`)
+
+
+export const bloodDemandPredictionAPI=()=>
+  axiosWithCreds.get("/api/blood-banks/demand-prediction");
